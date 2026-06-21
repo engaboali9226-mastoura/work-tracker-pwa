@@ -12,3 +12,4 @@
 | ADR-008 | Use API Abstraction Layer | Approved |
 | ADR-009 | Adopt Vite As Frontend Build System | Approved |
 | ADR-010 | Use Domain-Based Frontend Structure | Approved |
+| ADR-011 | Use GitHub Pages As Primary Deployment Platform | Approved |
