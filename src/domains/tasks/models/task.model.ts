@@ -19,7 +19,4 @@ export interface Task {
 
   status: TaskStatus;
 
-  pauseReason?: string;
-
-  cancellationReason?: string;
 }

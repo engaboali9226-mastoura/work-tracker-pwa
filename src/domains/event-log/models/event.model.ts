@@ -5,6 +5,8 @@ export interface EventLog {
 
   eventType: EventType;
 
+  entityType: string;
+
   entityId: string;
 
   occurredAt: string;
