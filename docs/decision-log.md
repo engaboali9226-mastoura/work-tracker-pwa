@@ -8,3 +8,4 @@
 | ADR-004 | Use Day Key For Daily Tracking | Approved |
 | ADR-005 | Use Configurable System Timezone | Approved |
 | ADR-006 | Adopt Domain-Driven Architecture | Approved |
+| ADR-007 | Adopt Online-First PWA Architecture | Approved |
