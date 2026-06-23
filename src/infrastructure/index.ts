@@ -21,3 +21,5 @@ export * from "./errors/configuration.error";
 
 export * from "./mappers/notion-task-page.mapper";
 export * from "./mappers/notion-event-page.mapper";
+
+export * from "./api/clients/notion-api-client.impl";
