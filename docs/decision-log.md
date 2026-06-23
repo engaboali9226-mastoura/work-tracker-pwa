@@ -18,4 +18,5 @@
 | ADR-014 | Entity Key Strategy                             | Approved |
 | ADR-015 | Task Creation Architecture                      | Approved |
 | ADR-016 | Task Query Architecture | Approved |
+| ADR-017 | WorkDay Architecture | Accepted | 2026-06-23 |
                           | Approved |
