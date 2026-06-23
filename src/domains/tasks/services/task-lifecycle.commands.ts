@@ -1,3 +1,4 @@
+
 export interface PauseTaskCommand {
   taskKey: string;
   timestamp: string;
@@ -20,3 +21,4 @@ export interface CancelTaskCommand {
   timestamp: string;
   reason: string;
 }
+

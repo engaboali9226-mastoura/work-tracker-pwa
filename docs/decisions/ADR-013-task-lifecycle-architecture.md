@@ -10,39 +10,41 @@ Task status updates must not be performed directly by application code.
 
 All lifecycle changes shall be executed through TaskLifecycleService.
 
-Task creation is not considered a lifecycle transition.
+Task creation immediately starts the task and places it in the active state.
 
-Creating a task immediately starts the task and places it in the active state.
+Task creation is considered the task start operation.
+
+No separate startTask() lifecycle operation shall exist.
 
 ## Task States
 
 Supported task states:
 
-- active
-- paused
-- completed
-- cancelled
+* active
+* paused
+* completed
+* cancelled
 
 ## Allowed Transitions
 
 active
 
-- paused
-- completed
-- cancelled
+* paused
+* completed
+* cancelled
 
 paused
 
-- active
-- completed
-- cancelled
+* active
+* completed
+* cancelled
 
 ## Forbidden Transitions
 
 No transitions are allowed from:
 
-- completed
-- cancelled
+* completed
+* cancelled
 
 These states are terminal.
 
@@ -50,19 +52,21 @@ These states are terminal.
 
 The service shall support:
 
-- pauseTask()
-- resumeTask()
-- completeTask()
-- cancelTask()
+* pauseTask()
+* resumeTask()
+* completeTask()
+* cancelTask()
 
-Task creation and task startup are handled by the task creation workflow and are not part of TaskLifecycleService.
+Task creation and task startup are handled by the task creation workflow.
+
+A newly created task shall be created directly in the active state.
 
 ## Timestamp Selection
 
 Task creation and lifecycle operations may use either:
 
-- Current Time
-- User-selected Custom Time
+* Current Time
+* User-selected Custom Time
 
 The selected timestamp becomes the official timestamp recorded for the operation.
 
@@ -74,7 +78,9 @@ This supports retrospective work entry and manual time correction.
 
 Pause operations require a reason.
 
-Resume operations require a reason describing the condition that enabled work to continue.
+Resume operations require a reason describing why work is being resumed.
+
+The reason may indicate that the original pause condition was resolved or that another circumstance enabled work to continue.
 
 Cancel operations require a reason.
 
@@ -88,12 +94,13 @@ Each lifecycle operation must create an EventLog entry.
 
 Operation to event mapping:
 
-| Operation    | Event Type      |
-| ------------ | --------------- |
-| pauseTask    | task-paused     |
-| resumeTask   | task-resumed    |
-| completeTask | task-completed  |
-| cancelTask   | task-cancelled  |
+| Operation     | Event Type     |
+| ------------- | -------------- |
+| Task Creation | task-started   |
+| pauseTask     | task-paused    |
+| resumeTask    | task-resumed   |
+| completeTask  | task-completed |
+| cancelTask    | task-cancelled |
 
 ## Source of Truth
 
@@ -129,14 +136,17 @@ Task ownership remains assigned to the WorkDay in which the task started.
 
 ### Advantages
 
-- Simple task model
-- Centralized lifecycle rules
-- Complete audit history
-- Support for custom timestamps
-- Detailed operational history
-- Future reporting support
+* Simple task model
+* Centralized lifecycle rules
+* Complete audit history
+* Support for custom timestamps
+* Detailed operational history
+* Future reporting support
+* Simpler task creation workflow
+* No inactive task state required
 
 ### Disadvantages
 
-- Lifecycle analytics require EventLog processing
-- Some reports may require event reconstruction
+* Lifecycle analytics require EventLog processing
+* Some reports may require event reconstruction
+  }
