@@ -20,10 +20,10 @@ Historical activity is recorded through EventLog entries.
 
 A consistent mechanism is required to:
 
-* Control task state transitions
-* Prevent invalid transitions
-* Generate lifecycle events
-* Maintain a complete audit history
+- Control task state transitions
+- Prevent invalid transitions
+- Generate lifecycle events
+- Maintain a complete audit history
 
 ---
 
@@ -45,10 +45,10 @@ Creating a task immediately starts the task and places it in the active state.
 
 Supported task states:
 
-* active
-* paused
-* completed
-* cancelled
+- active
+- paused
+- completed
+- cancelled
 
 ---
 
@@ -56,15 +56,15 @@ Supported task states:
 
 active
 
-* paused
-* completed
-* cancelled
+- paused
+- completed
+- cancelled
 
 paused
 
-* active
-* completed
-* cancelled
+- active
+- completed
+- cancelled
 
 ---
 
@@ -72,8 +72,8 @@ paused
 
 No transitions are allowed from:
 
-* completed
-* cancelled
+- completed
+- cancelled
 
 These states are terminal.
 
@@ -83,10 +83,10 @@ These states are terminal.
 
 The service shall support:
 
-* pauseTask()
-* resumeTask()
-* completeTask()
-* cancelTask()
+- pauseTask()
+- resumeTask()
+- completeTask()
+- cancelTask()
 
 Task creation and task startup are handled by the task creation workflow and are not part of TaskLifecycleService.
 
@@ -98,12 +98,12 @@ Each lifecycle operation must create an EventLog entry.
 
 Operation to event mapping:
 
-| Operation    | Event Type     |
-| ------------ | -------------- |
-| pauseTask    | task-paused    |
-| resumeTask   | task-resumed   |
+| Operation | Event Type |
+|-----------|------------|
+| pauseTask | task-paused |
+| resumeTask | task-resumed |
 | completeTask | task-completed |
-| cancelTask   | task-cancelled |
+| cancelTask | task-cancelled |
 
 ---
 
@@ -111,8 +111,8 @@ Operation to event mapping:
 
 Lifecycle operations may use either:
 
-* Current Time
-* User-selected Custom Time
+- Current Time
+- User-selected Custom Time
 
 The selected timestamp becomes the official event timestamp.
 
@@ -164,13 +164,13 @@ Task ownership remains assigned to the WorkDay in which the task started.
 
 ### Advantages
 
-* Simple task model
-* Centralized lifecycle rules
-* Complete audit history
-* Support for custom timestamps
-* Future reporting support
+- Simple task model
+- Centralized lifecycle rules
+- Complete audit history
+- Support for custom timestamps
+- Future reporting support
 
 ### Disadvantages
 
-* Lifecycle analytics require EventLog processing
-* Some reports may require event reconstruction
+- Lifecycle analytics require EventLog processing
+- Some reports may require event reconstruction
