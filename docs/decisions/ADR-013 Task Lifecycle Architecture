@@ -1,0 +1,154 @@
+# ADR-013 Task Lifecycle Architecture
+
+## Status
+
+Accepted
+
+## Date
+
+2026-06-23
+
+---
+
+## Context
+
+The domain model implementation has been completed.
+
+Tasks currently represent only the latest state of work.
+
+Historical activity is recorded through EventLog entries.
+
+A consistent mechanism is required to:
+
+* Control task state transitions
+* Prevent invalid transitions
+* Generate lifecycle events
+* Maintain a complete audit history
+
+---
+
+## Decision
+
+A dedicated TaskLifecycleService shall be responsible for all task lifecycle operations.
+
+Task status updates must not be performed directly by application code.
+
+All lifecycle changes must be executed through TaskLifecycleService.
+
+---
+
+## Task States
+
+Supported task states:
+
+* active
+* paused
+* completed
+* cancelled
+
+---
+
+## Allowed Transitions
+
+active
+
+* paused
+* completed
+* cancelled
+
+paused
+
+* active
+* completed
+* cancelled
+
+---
+
+## Forbidden Transitions
+
+No transitions are allowed from:
+
+* completed
+* cancelled
+
+These states are terminal.
+
+---
+
+## Lifecycle Operations
+
+The service shall support:
+
+* startTask()
+* pauseTask()
+* resumeTask()
+* completeTask()
+* cancelTask()
+
+---
+
+## EventLog Integration
+
+Each lifecycle operation must create an EventLog entry.
+
+Operation to event mapping:
+
+| Operation    | Event Type     |
+| ------------ | -------------- |
+| startTask    | task-started   |
+| pauseTask    | task-paused    |
+| resumeTask   | task-resumed   |
+| completeTask | task-completed |
+| cancelTask   | task-cancelled |
+
+---
+
+## Source of Truth
+
+Task stores current state only.
+
+EventLog stores historical activity.
+
+Task lifecycle history shall not be stored inside the Task entity.
+
+---
+
+## Time Tracking
+
+Task.startTime represents the original task start time.
+
+Task.endTime represents the final completion or cancellation time.
+
+Pause and resume intervals shall be derived from EventLog records.
+
+---
+
+## Parallel Tasks
+
+Multiple active tasks are allowed simultaneously.
+
+Task overlap is permitted.
+
+---
+
+## Cross-Day Tasks
+
+Tasks may span multiple calendar days.
+
+Task ownership remains assigned to the WorkDay in which the task started.
+
+---
+
+## Consequences
+
+Advantages:
+
+* Simple task model
+* Centralized lifecycle rules
+* Complete audit history
+* Future reporting support
+
+Disadvantages:
+
+* Lifecycle analytics require EventLog processing
+* Some reports may require event reconstruction
