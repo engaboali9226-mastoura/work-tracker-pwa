@@ -9,6 +9,9 @@ export * from "./dto/notion-event.dto";
 export * from "./mappers/task.mapper";
 export * from "./mappers/event.mapper";
 
+export * from "./repositories/in-memory-task.repository";
+export * from "./repositories/in-memory-event.repository";
+
 export * from "./errors/infrastructure.error";
 export * from "./errors/notion-api.error";
 export * from "./errors/configuration.error";
