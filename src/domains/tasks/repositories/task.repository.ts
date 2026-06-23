@@ -16,6 +16,8 @@ export interface TaskRepository {
 
   findActiveTasks(): Promise<Task[]>;
 
+  findAll(): Promise<Task[]>;
+
   save(
     task: Task,
   ): Promise<void>;

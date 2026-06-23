@@ -20,3 +20,5 @@
 | ADR-016 | Task Query Architecture | Approved |
 | ADR-017 | WorkDay Architecture | Accepted | 2026-06-23 |
                           | Approved |
+| ADR-018 | WorkDay Query Architecture | Accepted | 2026-06-23 |
+| ADR-019 | Derived WorkDay Model | Accepted | 2026-06-23 |

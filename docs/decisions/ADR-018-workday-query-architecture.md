@@ -10,10 +10,12 @@ ADR-017 established WorkDay as the aggregate root responsible for organizing tas
 
 The application requires query capabilities to:
 
-- Retrieve a single WorkDay.
-- Retrieve all tasks owned by a WorkDay.
-- Retrieve WorkDays within a date range.
-- Retrieve a WorkDay together with its associated tasks.
+* Retrieve a single WorkDay.
+* Retrieve all tasks owned by a WorkDay.
+* Retrieve WorkDays within a date range.
+* Retrieve a WorkDay together with its associated tasks.
+
+WorkDay instances are not stored independently. They are derived dynamically from task ownership data.
 
 To maintain consistency with ADR-016 (Task Query Architecture), query responsibilities must remain separated from task lifecycle and task creation concerns.
 
@@ -27,10 +29,10 @@ The service shall be responsible for all WorkDay-related query operations.
 
 The service shall not perform:
 
-- Task creation
-- Task updates
-- Task lifecycle transitions
-- WorkDay mutations
+* Task creation
+* Task updates
+* Task lifecycle transitions
+* WorkDay mutations
 
 Its responsibility is read-only access to WorkDay data.
 
@@ -39,16 +41,32 @@ Its responsibility is read-only access to WorkDay data.
 WorkDayQueryService shall depend on:
 
 ```ts
-WorkDayRepository
-```
-
-and
-
-```ts
 TaskRepository
 ```
 
-because WorkDay details require access to both WorkDay data and owned tasks.
+Task ownership data shall be the single source of truth for WorkDay queries.
+
+WorkDay instances shall be generated dynamically from task ownership information and shall not be stored independently.
+
+### Derived WorkDay Model
+
+WorkDay shall be treated as a derived aggregate.
+
+Given one or more tasks with the same ownerDayKey:
+
+```ts
+task.ownerDayKey
+```
+
+the system shall dynamically generate:
+
+```ts
+const workDay: WorkDay = {
+  key: ownerDayKey
+};
+```
+
+No WorkDay persistence layer shall be introduced.
 
 ### Supported Operations
 
@@ -60,7 +78,9 @@ The service shall expose the following operations.
 getWorkDay(dayKey: DayKey): Promise<WorkDay | null>
 ```
 
-Returns a single WorkDay.
+Returns a generated WorkDay if tasks exist for the specified day.
+
+Returns null if no tasks are owned by the specified day.
 
 #### Get WorkDay Tasks
 
@@ -82,7 +102,7 @@ task.ownerDayKey
 getWorkDayDetails(dayKey: DayKey): Promise<WorkDayDetails | null>
 ```
 
-Returns a WorkDay together with all owned tasks.
+Returns a generated WorkDay together with all owned tasks.
 
 #### Get WorkDays Range
 
@@ -93,7 +113,7 @@ getWorkDays(
 ): Promise<WorkDay[]>
 ```
 
-Returns all WorkDays within the specified range.
+Returns generated WorkDay instances for all ownership days found within the specified range.
 
 ### WorkDayDetails DTO
 
@@ -163,16 +183,18 @@ depending on the operation.
 
 ### Positive
 
-- Clear separation of read and write responsibilities.
-- Consistent ownership-based querying.
-- Simplified UI integration.
-- Alignment with ADR-012, ADR-016, and ADR-017.
+* Clear separation of read and write responsibilities.
+* Consistent ownership-based querying.
+* Simplified UI integration.
+* No additional persistence layer is required.
+* Single source of truth remains TaskRepository.
+* Alignment with ADR-012, ADR-016, and ADR-017.
 
 ### Negative
 
-- WorkDayDetails requires multiple repository reads.
-- Summary values are computed dynamically.
-- Additional DTO layer is required.
+* WorkDayDetails requires additional aggregation logic.
+* Summary values are computed dynamically.
+* WorkDay instances are recreated on demand.
 
 ## Decision Date
 
