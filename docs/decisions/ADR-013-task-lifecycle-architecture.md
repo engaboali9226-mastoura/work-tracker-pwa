@@ -70,18 +70,30 @@ Task state updates and EventLog entries shall use the selected timestamp rather 
 
 This supports retrospective work entry and manual time correction.
 
+## Reason Capture
+
+Pause operations require a reason.
+
+Resume operations require a reason describing the condition that enabled work to continue.
+
+Cancel operations require a reason.
+
+All provided reasons shall be recorded in EventLog entries.
+
+Completion operations do not require a reason.
+
 ## EventLog Integration
 
 Each lifecycle operation must create an EventLog entry.
 
 Operation to event mapping:
 
-| Operation | Event Type |
-|-----------|------------|
-| pauseTask | task-paused |
-| resumeTask | task-resumed |
-| completeTask | task-completed |
-| cancelTask | task-cancelled |
+| Operation    | Event Type      |
+| ------------ | --------------- |
+| pauseTask    | task-paused     |
+| resumeTask   | task-resumed    |
+| completeTask | task-completed  |
+| cancelTask   | task-cancelled  |
 
 ## Source of Truth
 
@@ -121,6 +133,7 @@ Task ownership remains assigned to the WorkDay in which the task started.
 - Centralized lifecycle rules
 - Complete audit history
 - Support for custom timestamps
+- Detailed operational history
 - Future reporting support
 
 ### Disadvantages
