@@ -16,3 +16,5 @@
 | ADR-012 | WorkDay Ownership For Cross-Day Tasks           | Approved |
 | ADR-013 | Task Lifecycle Architecture                     | Approved |
 | ADR-014 | Entity Key Strategy                             | Approved |
+| ADR-015 | Task Creation Architecture                      | Approved |
+                          | Approved |
