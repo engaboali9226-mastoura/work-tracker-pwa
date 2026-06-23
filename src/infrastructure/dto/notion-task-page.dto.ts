@@ -1,9 +1,11 @@
+import type { TaskStatus } from "../../domains/tasks/models/task-status";
+
 export interface NotionTaskPageDto {
   "Task Key": string;
 
   "Work Day Key": string;
 
-  "Title": string;
+  Title: string;
 
   "Category Id": string;
 
@@ -15,5 +17,5 @@ export interface NotionTaskPageDto {
 
   "End Time"?: string;
 
-  "Status": string;
+  Status: TaskStatus;
 }

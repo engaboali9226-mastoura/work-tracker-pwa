@@ -18,3 +18,6 @@ export * from "./repositories/in-memory-event.repository";
 export * from "./errors/infrastructure.error";
 export * from "./errors/notion-api.error";
 export * from "./errors/configuration.error";
+
+export * from "./mappers/notion-task-page.mapper";
+export * from "./mappers/notion-event-page.mapper";
