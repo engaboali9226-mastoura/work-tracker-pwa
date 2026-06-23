@@ -6,6 +6,9 @@ export * from "./configuration/notion.configuration";
 export * from "./dto/notion-task.dto";
 export * from "./dto/notion-event.dto";
 
+export * from "./mappers/task.mapper";
+export * from "./mappers/event.mapper";
+
 export * from "./errors/infrastructure.error";
 export * from "./errors/notion-api.error";
 export * from "./errors/configuration.error";

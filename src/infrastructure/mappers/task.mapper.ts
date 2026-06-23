@@ -1,0 +1,36 @@
+import type { Task } from "../../domains/tasks/models/task.model";
+import type { NotionTaskDto } from "../dto/notion-task.dto";
+
+export class TaskMapper {
+  public static toDomain(
+    dto: NotionTaskDto,
+  ): Task {
+    return {
+      taskKey: dto.taskKey,
+      workDayKey: dto.workDayKey,
+      title: dto.title,
+      categoryId: dto.categoryId,
+      siteId: dto.siteId,
+      projectId: dto.projectId,
+      startTime: dto.startTime,
+      endTime: dto.endTime,
+      status: dto.status,
+    };
+  }
+
+  public static toDto(
+    task: Task,
+  ): NotionTaskDto {
+    return {
+      taskKey: task.taskKey,
+      workDayKey: task.workDayKey,
+      title: task.title,
+      categoryId: task.categoryId,
+      siteId: task.siteId,
+      projectId: task.projectId,
+      startTime: task.startTime,
+      endTime: task.endTime,
+      status: task.status,
+    };
+  }
+}

@@ -1,3 +1,5 @@
+import type { TaskStatus } from "../../domains/tasks/models/task-status";
+
 export interface NotionTaskDto {
   taskKey: string;
 
@@ -15,5 +17,5 @@ export interface NotionTaskDto {
 
   endTime?: string;
 
-  status: string;
+  status: TaskStatus;
 }
