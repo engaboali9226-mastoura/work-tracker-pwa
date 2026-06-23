@@ -23,3 +23,6 @@ export * from "./mappers/notion-task-page.mapper";
 export * from "./mappers/notion-event-page.mapper";
 
 export * from "./api/clients/notion-api-client.impl";
+
+export * from "./mappers/notion-task-properties.mapper";
+export * from "./mappers/notion-event-properties.mapper";
