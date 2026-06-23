@@ -1,45 +1,18 @@
 # ADR-013 Task Lifecycle Architecture
 
-## Status
-
-Accepted
-
-## Date
-
-2026-06-23
-
----
-
-## Context
-
-The domain model implementation has been completed.
-
-Tasks currently represent only the latest state of work.
-
-Historical activity is recorded through EventLog entries.
-
-A consistent mechanism is required to:
-
-- Control task state transitions
-- Prevent invalid transitions
-- Generate lifecycle events
-- Maintain a complete audit history
-
----
+Status: Approved
 
 ## Decision
 
-A dedicated TaskLifecycleService shall be responsible for all task lifecycle operations.
+A dedicated TaskLifecycleService shall manage all task lifecycle transitions.
 
 Task status updates must not be performed directly by application code.
 
-All lifecycle changes must be executed through TaskLifecycleService.
+All lifecycle changes shall be executed through TaskLifecycleService.
 
 Task creation is not considered a lifecycle transition.
 
 Creating a task immediately starts the task and places it in the active state.
-
----
 
 ## Task States
 
@@ -49,8 +22,6 @@ Supported task states:
 - paused
 - completed
 - cancelled
-
----
 
 ## Allowed Transitions
 
@@ -66,8 +37,6 @@ paused
 - completed
 - cancelled
 
----
-
 ## Forbidden Transitions
 
 No transitions are allowed from:
@@ -76,8 +45,6 @@ No transitions are allowed from:
 - cancelled
 
 These states are terminal.
-
----
 
 ## Lifecycle Operations
 
@@ -90,7 +57,18 @@ The service shall support:
 
 Task creation and task startup are handled by the task creation workflow and are not part of TaskLifecycleService.
 
----
+## Timestamp Selection
+
+Task creation and lifecycle operations may use either:
+
+- Current Time
+- User-selected Custom Time
+
+The selected timestamp becomes the official timestamp recorded for the operation.
+
+Task state updates and EventLog entries shall use the selected timestamp rather than application execution time.
+
+This supports retrospective work entry and manual time correction.
 
 ## EventLog Integration
 
@@ -105,23 +83,6 @@ Operation to event mapping:
 | completeTask | task-completed |
 | cancelTask | task-cancelled |
 
----
-
-## Event Timestamp Handling
-
-Lifecycle operations may use either:
-
-- Current Time
-- User-selected Custom Time
-
-The selected timestamp becomes the official event timestamp.
-
-Task state updates and EventLog entries shall use the selected timestamp rather than system execution time.
-
-This supports delayed and retrospective activity recording.
-
----
-
 ## Source of Truth
 
 Task stores current state only.
@@ -129,8 +90,6 @@ Task stores current state only.
 EventLog stores historical activity.
 
 Task lifecycle history shall not be stored inside the Task entity.
-
----
 
 ## Time Tracking
 
@@ -142,23 +101,17 @@ Pause and resume intervals shall not be stored in Task.
 
 Lifecycle duration analysis shall be derived from EventLog records.
 
----
-
 ## Parallel Tasks
 
 Multiple active tasks are allowed simultaneously.
 
 Task overlap is permitted.
 
----
-
 ## Cross-Day Tasks
 
 Tasks may span multiple calendar days.
 
 Task ownership remains assigned to the WorkDay in which the task started.
-
----
 
 ## Consequences
 
