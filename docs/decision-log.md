@@ -17,4 +17,5 @@
 | ADR-013 | Task Lifecycle Architecture                     | Approved |
 | ADR-014 | Entity Key Strategy                             | Approved |
 | ADR-015 | Task Creation Architecture                      | Approved |
+| ADR-016 | Task Query Architecture | Approved |
                           | Approved |

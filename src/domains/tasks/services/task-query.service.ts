@@ -1,22 +1,18 @@
 import type { Task } from "../models/task.model";
 import type { TaskStatus } from "../models/task-status";
 
-export interface TaskRepository {
-  findByKey(
+export interface TaskQueryService {
+  getTaskByKey(
     taskKey: string,
   ): Promise<Task | null>;
 
-  findByWorkDay(
+  getTasksByWorkDay(
     workDayKey: string,
   ): Promise<Task[]>;
 
-  findByStatus(
+  getTasksByStatus(
     status: TaskStatus,
   ): Promise<Task[]>;
 
-  findActiveTasks(): Promise<Task[]>;
-
-  save(
-    task: Task,
-  ): Promise<void>;
+  getActiveTasks(): Promise<Task[]>;
 }
