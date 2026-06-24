@@ -1,0 +1,4 @@
+src/infrastructure/configuration/notion.configuration.ts:    import.meta.env.VITE_REPOSITORY_PROVIDER;
+src/infrastructure/configuration/notion.configuration.ts:    import.meta.env.VITE_NOTION_API_TOKEN;
+src/infrastructure/configuration/notion.configuration.ts:    import.meta.env.VITE_NOTION_TASKS_DATABASE_ID;
+src/infrastructure/configuration/notion.configuration.ts:    import.meta.env.VITE_NOTION_EVENTS_DATABASE_ID;

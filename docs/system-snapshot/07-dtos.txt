@@ -1,0 +1,107 @@
+==================================================
+src/domains/work-days/dtos/work-day-details.dto.ts
+==================================================
+import type { Task } from "../../tasks/models/task.model";
+import type { WorkDay } from "../models/work-day.model";
+
+export interface WorkDayDetails {
+  workDay: WorkDay;
+
+  tasks: Task[];
+}
+==================================================
+src/domains/work-days/dtos/work-day-summary.dto.ts
+==================================================
+export interface WorkDaySummary {
+  dayKey: string;
+
+  taskCount: number;
+}
+==================================================
+src/infrastructure/dto/notion-event-page.dto.ts
+==================================================
+import type { EventType } from "../../domains/event-log/models/event-type";
+
+export interface NotionEventPageDto {
+  "Event Id": string;
+
+  "Event Type": EventType;
+
+  "Entity Type": string;
+
+  "Entity Id": string;
+
+  "Occurred At": string;
+
+  Description?: string;
+}
+
+==================================================
+src/infrastructure/dto/notion-event.dto.ts
+==================================================
+import type { EventType } from "../../domains/event-log/models/event-type";
+
+export interface NotionEventDto {
+  eventId: string;
+
+  eventType: EventType;
+
+  entityType: string;
+
+  entityId: string;
+
+  occurredAt: string;
+
+  description?: string;
+}
+
+==================================================
+src/infrastructure/dto/notion-task-page.dto.ts
+==================================================
+import type { TaskStatus } from "../../domains/tasks/models/task-status";
+
+export interface NotionTaskPageDto {
+  "Task Key": string;
+
+  "Work Day Key": string;
+
+  Title: string;
+
+  "Category Id": string;
+
+  "Site Id"?: string;
+
+  "Project Id"?: string;
+
+  "Start Time": string;
+
+  "End Time"?: string;
+
+  Status: TaskStatus;
+}
+
+==================================================
+src/infrastructure/dto/notion-task.dto.ts
+==================================================
+import type { TaskStatus } from "../../domains/tasks/models/task-status";
+
+export interface NotionTaskDto {
+  taskKey: string;
+
+  workDayKey: string;
+
+  title: string;
+
+  categoryId: string;
+
+  siteId?: string;
+
+  projectId?: string;
+
+  startTime: string;
+
+  endTime?: string;
+
+  status: TaskStatus;
+}
+

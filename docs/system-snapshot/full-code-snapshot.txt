@@ -1,0 +1,2229 @@
+# PROJECT STRUCTURE
+src/App.tsx
+src/app/application-container.ts
+src/app/index.ts
+src/app/repository.factory.ts
+src/assets/hero.png
+src/domains/areas/models/area.model.ts
+src/domains/event-log/models/event-type.ts
+src/domains/event-log/models/event.model.ts
+src/domains/event-log/repositories/event.repository.ts
+src/domains/notes/models/note.model.ts
+src/domains/projects/models/project.model.ts
+src/domains/sites/models/site.model.ts
+src/domains/task-categories/models/task-category.model.ts
+src/domains/tasks/docs/task-lifecycle.md
+src/domains/tasks/errors/invalid-task-transition.error.ts
+src/domains/tasks/errors/task-not-found.error.ts
+src/domains/tasks/models/task-status.ts
+src/domains/tasks/models/task.model.ts
+src/domains/tasks/repositories/task.repository.ts
+src/domains/tasks/services/task-creation.commands.ts
+src/domains/tasks/services/task-creation.dependencies.ts
+src/domains/tasks/services/task-creation.service.impl.ts
+src/domains/tasks/services/task-creation.service.ts
+src/domains/tasks/services/task-lifecycle.commands.ts
+src/domains/tasks/services/task-lifecycle.dependencies.ts
+src/domains/tasks/services/task-lifecycle.service.impl.ts
+src/domains/tasks/services/task-lifecycle.service.ts
+src/domains/tasks/services/task-query.dependencies.ts
+src/domains/tasks/services/task-query.service.impl.ts
+src/domains/tasks/services/task-query.service.ts
+src/domains/tasks/services/task-transition-rules.ts
+src/domains/work-days/dtos/work-day-details.dto.ts
+src/domains/work-days/dtos/work-day-summary.dto.ts
+src/domains/work-days/models/work-day.model.ts
+src/domains/work-days/services/work-day-query.dependencies.ts
+src/domains/work-days/services/work-day-query.service.impl.ts
+src/domains/work-days/services/work-day-query.service.ts
+src/index.css
+src/infrastructure/api/clients/notion-api-client.impl.ts
+src/infrastructure/api/clients/notion-api-client.ts
+src/infrastructure/builders/notion-task-filter.builder.ts
+src/infrastructure/configuration/environment.configuration.ts
+src/infrastructure/configuration/notion.configuration.ts
+src/infrastructure/dto/notion-event-page.dto.ts
+src/infrastructure/dto/notion-event.dto.ts
+src/infrastructure/dto/notion-task-page.dto.ts
+src/infrastructure/dto/notion-task.dto.ts
+src/infrastructure/errors/configuration.error.ts
+src/infrastructure/errors/infrastructure.error.ts
+src/infrastructure/errors/notion-api.error.ts
+src/infrastructure/index.ts
+src/infrastructure/mappers/event.mapper.ts
+src/infrastructure/mappers/notion-event-page.mapper.ts
+src/infrastructure/mappers/notion-event-properties.mapper.ts
+src/infrastructure/mappers/notion-page-id.extractor.ts
+src/infrastructure/mappers/notion-task-page.extractor.ts
+src/infrastructure/mappers/notion-task-page.mapper.ts
+src/infrastructure/mappers/notion-task-properties.mapper.ts
+src/infrastructure/mappers/task.mapper.ts
+src/infrastructure/repositories/in-memory-event.repository.ts
+src/infrastructure/repositories/in-memory-task.repository.ts
+src/infrastructure/repositories/notion-event.repository.ts
+src/infrastructure/repositories/notion-task.repository.ts
+src/main.tsx
+src/shared/types/date-time.ts
+src/shared/types/vite-env.d.ts
+
+# SOURCE CODE
+
+
+##################################################
+src/app/application-container.ts
+##################################################
+import {
+  TaskCreationServiceImpl,
+} from "../domains/tasks/services/task-creation.service.impl";
+
+import {
+  TaskLifecycleServiceImpl,
+} from "../domains/tasks/services/task-lifecycle.service.impl";
+
+import {
+  TaskQueryServiceImpl,
+} from "../domains/tasks/services/task-query.service.impl";
+
+import {
+  WorkDayQueryServiceImpl,
+} from "../domains/work-days/services/work-day-query.service.impl";
+
+import {
+  createNotionConfiguration,
+} from "../infrastructure/configuration/notion.configuration";
+
+import {
+  createRepositoryFactory,
+} from "./repository.factory";
+
+export class ApplicationContainer {
+  public readonly taskRepository;
+
+  public readonly eventRepository;
+
+  public readonly taskCreationService;
+
+  public readonly taskLifecycleService;
+
+  public readonly taskQueryService;
+
+  public readonly workDayQueryService;
+
+  constructor() {
+    const configuration =
+      createNotionConfiguration();
+
+    const repositoryFactory =
+      createRepositoryFactory(
+        configuration,
+      );
+
+    this.taskRepository =
+      repositoryFactory.createTaskRepository();
+
+    this.eventRepository =
+      repositoryFactory.createEventRepository();
+
+    this.taskCreationService =
+      new TaskCreationServiceImpl({
+        taskRepository:
+          this.taskRepository,
+
+        eventRepository:
+          this.eventRepository,
+      });
+
+    this.taskLifecycleService =
+      new TaskLifecycleServiceImpl({
+        taskRepository:
+          this.taskRepository,
+
+        eventRepository:
+          this.eventRepository,
+      });
+
+    this.taskQueryService =
+      new TaskQueryServiceImpl({
+        taskRepository:
+          this.taskRepository,
+      });
+
+    this.workDayQueryService =
+      new WorkDayQueryServiceImpl({
+        taskRepository:
+          this.taskRepository,
+      });
+  }
+}
+
+export const applicationContainer =
+  new ApplicationContainer();
+
+
+##################################################
+src/app/index.ts
+##################################################
+export * from "./application-container";
+export * from "./repository.factory";
+
+
+##################################################
+src/app/repository.factory.ts
+##################################################
+import type { TaskRepository } from "../domains/tasks/repositories/task.repository";
+
+import type { EventRepository } from "../domains/event-log/repositories/event.repository";
+
+import type { EnvironmentConfiguration } from "../infrastructure/configuration/environment.configuration";
+
+import { NotionApiClientImpl } from "../infrastructure/api/clients/notion-api-client.impl";
+
+import { InMemoryTaskRepository } from "../infrastructure/repositories/in-memory-task.repository";
+import { InMemoryEventRepository } from "../infrastructure/repositories/in-memory-event.repository";
+
+import { NotionTaskRepository } from "../infrastructure/repositories/notion-task.repository";
+import { NotionEventRepository } from "../infrastructure/repositories/notion-event.repository";
+
+export interface RepositoryFactory {
+  createTaskRepository(): TaskRepository;
+
+  createEventRepository(): EventRepository;
+}
+
+export class InMemoryRepositoryFactory
+  implements RepositoryFactory
+{
+  public createTaskRepository(): TaskRepository {
+    return new InMemoryTaskRepository();
+  }
+
+  public createEventRepository(): EventRepository {
+    return new InMemoryEventRepository();
+  }
+}
+
+export class NotionRepositoryFactory
+  implements RepositoryFactory
+{
+  private readonly configuration: EnvironmentConfiguration;
+
+  private readonly notionClient: NotionApiClientImpl;
+
+  constructor(
+    configuration: EnvironmentConfiguration,
+  ) {
+    this.configuration = configuration;
+
+    this.notionClient =
+      new NotionApiClientImpl(
+        configuration.notionApiToken,
+      );
+  }
+
+  public createTaskRepository(): TaskRepository {
+    return new NotionTaskRepository(
+      this.notionClient,
+      this.configuration,
+    );
+  }
+
+  public createEventRepository(): EventRepository {
+    return new NotionEventRepository(
+      this.notionClient,
+      this.configuration,
+    );
+  }
+}
+
+export function createRepositoryFactory(
+  configuration: EnvironmentConfiguration,
+): RepositoryFactory {
+  if (
+    configuration.repositoryProvider ===
+    "memory"
+  ) {
+    return new InMemoryRepositoryFactory();
+  }
+
+  return new NotionRepositoryFactory(
+    configuration,
+  );
+}
+
+##################################################
+src/domains/areas/models/area.model.ts
+##################################################
+export interface Area {
+  areaId: string;
+  name: string;
+}
+
+##################################################
+src/domains/event-log/models/event-type.ts
+##################################################
+export type EventType =
+  | "attendance-started"
+  | "attendance-ended"
+  | "task-started"
+  | "task-paused"
+  | "task-resumed"
+  | "task-completed"
+  | "task-cancelled";
+
+##################################################
+src/domains/event-log/models/event.model.ts
+##################################################
+import type { EventType } from "./event-type";
+
+export interface EventLog {
+  eventId: string;
+
+  eventType: EventType;
+
+  entityType: string;
+
+  entityId: string;
+
+  occurredAt: string;
+
+  description?: string;
+}
+
+##################################################
+src/domains/event-log/repositories/event.repository.ts
+##################################################
+import type { EventLog } from "../models/event.model";
+
+export interface EventRepository {
+  save(
+    event: EventLog,
+  ): Promise<void>;
+}
+
+##################################################
+src/domains/notes/models/note.model.ts
+##################################################
+export interface Note {
+  noteId: string;
+
+  taskKey: string;
+
+  text: string;
+
+  createdAt: string;
+}
+
+##################################################
+src/domains/projects/models/project.model.ts
+##################################################
+export interface Project {
+  projectId: string;
+
+  areaId: string;
+
+  name: string;
+}
+
+##################################################
+src/domains/sites/models/site.model.ts
+##################################################
+export interface Site {
+  siteId: string;
+
+  projectId: string;
+
+  name: string;
+}
+
+##################################################
+src/domains/task-categories/models/task-category.model.ts
+##################################################
+export interface TaskCategory {
+  categoryId: string;
+
+  name: string;
+
+  description?: string;
+
+  isActive: boolean;
+}
+
+##################################################
+src/domains/tasks/errors/invalid-task-transition.error.ts
+##################################################
+import type { TaskStatus } from "../models/task-status";
+
+export class InvalidTaskTransitionError extends Error {
+  constructor(
+    currentStatus: TaskStatus,
+    targetStatus: TaskStatus,
+  ) {
+    super(
+      `Invalid task transition from '${currentStatus}' to '${targetStatus}'`,
+    );
+
+    this.name = "InvalidTaskTransitionError";
+  }
+}
+
+##################################################
+src/domains/tasks/errors/task-not-found.error.ts
+##################################################
+export class TaskNotFoundError extends Error {
+  constructor(taskKey: string) {
+    super(`Task not found: ${taskKey}`);
+
+    this.name = "TaskNotFoundError";
+  }
+}
+
+##################################################
+src/domains/tasks/models/task-status.ts
+##################################################
+export type TaskStatus =
+  | "active"
+  | "paused"
+  | "completed"
+  | "cancelled";
+
+##################################################
+src/domains/tasks/models/task.model.ts
+##################################################
+import type { TaskStatus } from "./task-status";
+
+export interface Task {
+  taskKey: string;
+
+  workDayKey: string;
+
+  title: string;
+
+  categoryId: string;
+
+  siteId?: string;
+
+  projectId?: string;
+
+  startTime: string;
+
+  endTime?: string;
+
+  status: TaskStatus;
+
+}
+
+##################################################
+src/domains/tasks/repositories/task.repository.ts
+##################################################
+import type { Task } from "../models/task.model";
+import type { TaskStatus } from "../models/task-status";
+
+export interface TaskRepository {
+  findByKey(
+    taskKey: string,
+  ): Promise<Task | null>;
+
+  findByWorkDay(
+    workDayKey: string,
+  ): Promise<Task[]>;
+
+  findByStatus(
+    status: TaskStatus,
+  ): Promise<Task[]>;
+
+  findActiveTasks(): Promise<Task[]>;
+
+  findAll(): Promise<Task[]>;
+
+  save(
+    task: Task,
+  ): Promise<void>;
+}
+
+##################################################
+src/domains/tasks/services/task-creation.commands.ts
+##################################################
+export interface CreateTaskCommand {
+taskKey: string;
+
+workDayKey: string;
+
+title: string;
+
+categoryId: string;
+
+siteId?: string;
+
+projectId?: string;
+
+startTime: string;
+}
+
+
+##################################################
+src/domains/tasks/services/task-creation.dependencies.ts
+##################################################
+import type { EventRepository } from "../../event-log/repositories/event.repository";
+
+import type { TaskRepository } from "../repositories/task.repository";
+
+export interface TaskCreationDependencies {
+taskRepository: TaskRepository;
+
+eventRepository: EventRepository;
+}
+
+
+##################################################
+src/domains/tasks/services/task-creation.service.impl.ts
+##################################################
+
+import type { EventLog } from "../../event-log/models/event.model";
+
+import type { Task } from "../models/task.model";
+
+import type {
+  CreateTaskCommand,
+} from "./task-creation.commands";
+
+import type { TaskCreationDependencies } from "./task-creation.dependencies";
+
+import type { TaskCreationService } from "./task-creation.service";
+
+export class TaskCreationServiceImpl
+  implements TaskCreationService
+{
+  private readonly dependencies: TaskCreationDependencies;
+
+  constructor(
+    dependencies: TaskCreationDependencies,
+  ) {
+    this.dependencies = dependencies;
+  }
+
+  async createTask(
+    command: CreateTaskCommand,
+  ): Promise<Task> {
+    const task: Task = {
+      taskKey: command.taskKey,
+
+      workDayKey: command.workDayKey,
+
+      title: command.title,
+
+      categoryId: command.categoryId,
+
+      siteId: command.siteId,
+
+      projectId: command.projectId,
+
+      startTime: command.startTime,
+
+      endTime: undefined,
+
+      status: "active",
+    };
+
+    await this.dependencies.taskRepository.save(
+      task,
+    );
+
+    const event: EventLog = {
+      eventId: crypto.randomUUID(),
+
+      eventType: "task-started",
+
+      entityType: "task",
+
+      entityId: task.taskKey,
+
+      occurredAt: command.startTime,
+    };
+
+    await this.dependencies.eventRepository.save(
+      event,
+    );
+
+    return task;
+  }
+}
+
+
+
+##################################################
+src/domains/tasks/services/task-creation.service.ts
+##################################################
+import type { Task } from "../models/task.model";
+
+import type {
+CreateTaskCommand,
+} from "./task-creation.commands";
+
+export interface TaskCreationService {
+createTask(
+command: CreateTaskCommand,
+): Promise<Task>;
+}
+
+
+##################################################
+src/domains/tasks/services/task-lifecycle.commands.ts
+##################################################
+
+export interface PauseTaskCommand {
+  taskKey: string;
+  timestamp: string;
+  reason: string;
+}
+
+export interface ResumeTaskCommand {
+  taskKey: string;
+  timestamp: string;
+  reason: string;
+}
+
+export interface CompleteTaskCommand {
+  taskKey: string;
+  timestamp: string;
+}
+
+export interface CancelTaskCommand {
+  taskKey: string;
+  timestamp: string;
+  reason: string;
+}
+
+
+
+##################################################
+src/domains/tasks/services/task-lifecycle.dependencies.ts
+##################################################
+import type { EventRepository } from "../../event-log/repositories/event.repository";
+import type { TaskRepository } from "../repositories/task.repository";
+
+export interface TaskLifecycleDependencies {
+  taskRepository: TaskRepository;
+
+  eventRepository: EventRepository;
+}
+
+##################################################
+src/domains/tasks/services/task-lifecycle.service.impl.ts
+##################################################
+
+import type { EventLog } from "../../event-log/models/event.model";
+
+import { TaskNotFoundError } from "../errors/task-not-found.error";
+import { InvalidTaskTransitionError } from "../errors/invalid-task-transition.error";
+
+import type { Task } from "../models/task.model";
+import type { TaskStatus } from "../models/task-status";
+
+import type {
+  PauseTaskCommand,
+  ResumeTaskCommand,
+  CompleteTaskCommand,
+  CancelTaskCommand,
+} from "./task-lifecycle.commands";
+
+import type { TaskLifecycleDependencies } from "./task-lifecycle.dependencies";
+
+import { TASK_TRANSITIONS } from "./task-transition-rules";
+
+import type { TaskLifecycleService } from "./task-lifecycle.service";
+
+export class TaskLifecycleServiceImpl
+  implements TaskLifecycleService
+{
+  private readonly dependencies: TaskLifecycleDependencies;
+
+  constructor(
+    dependencies: TaskLifecycleDependencies,
+  ) {
+    this.dependencies = dependencies;
+  }
+
+  async pauseTask(
+    command: PauseTaskCommand,
+  ): Promise<Task> {
+    const task = await this.loadTask(
+      command.taskKey,
+    );
+
+    this.validateTransition(
+      task.status,
+      "paused",
+    );
+
+    task.status = "paused";
+
+    await this.dependencies.taskRepository.save(
+      task,
+    );
+
+    await this.createEvent(
+      "task-paused",
+      task.taskKey,
+      command.timestamp,
+      command.reason,
+    );
+
+    return task;
+  }
+
+  async resumeTask(
+    command: ResumeTaskCommand,
+  ): Promise<Task> {
+    const task = await this.loadTask(
+      command.taskKey,
+    );
+
+    this.validateTransition(
+      task.status,
+      "active",
+    );
+
+    task.status = "active";
+
+    await this.dependencies.taskRepository.save(
+      task,
+    );
+
+    await this.createEvent(
+      "task-resumed",
+      task.taskKey,
+      command.timestamp,
+      command.reason,
+    );
+
+    return task;
+  }
+
+  async completeTask(
+    command: CompleteTaskCommand,
+  ): Promise<Task> {
+    const task = await this.loadTask(
+      command.taskKey,
+    );
+
+    this.validateTransition(
+      task.status,
+      "completed",
+    );
+
+    task.status = "completed";
+
+    task.endTime = command.timestamp;
+
+    await this.dependencies.taskRepository.save(
+      task,
+    );
+
+    await this.createEvent(
+      "task-completed",
+      task.taskKey,
+      command.timestamp,
+    );
+
+    return task;
+  }
+
+  async cancelTask(
+    command: CancelTaskCommand,
+  ): Promise<Task> {
+    const task = await this.loadTask(
+      command.taskKey,
+    );
+
+    this.validateTransition(
+      task.status,
+      "cancelled",
+    );
+
+    task.status = "cancelled";
+
+    task.endTime = command.timestamp;
+
+    await this.dependencies.taskRepository.save(
+      task,
+    );
+
+    await this.createEvent(
+      "task-cancelled",
+      task.taskKey,
+      command.timestamp,
+      command.reason,
+    );
+
+    return task;
+  }
+
+  private async loadTask(
+    taskKey: string,
+  ): Promise<Task> {
+    const task =
+      await this.dependencies.taskRepository.findByKey(
+        taskKey,
+      );
+
+    if (!task) {
+      throw new TaskNotFoundError(
+        taskKey,
+      );
+    }
+
+    return task;
+  }
+
+  private validateTransition(
+    currentStatus: TaskStatus,
+    targetStatus: TaskStatus,
+  ): void {
+    const allowedTransitions =
+      TASK_TRANSITIONS[currentStatus];
+
+    if (
+      !allowedTransitions.includes(
+        targetStatus,
+      )
+    ) {
+      throw new InvalidTaskTransitionError(
+        currentStatus,
+        targetStatus,
+      );
+    }
+  }
+
+  private async createEvent(
+    eventType: EventLog["eventType"],
+    taskKey: string,
+    timestamp: string,
+    description?: string,
+  ): Promise<void> {
+    const event: EventLog = {
+      eventId: crypto.randomUUID(),
+
+      eventType,
+
+      entityType: "task",
+
+      entityId: taskKey,
+
+      occurredAt: timestamp,
+
+      description,
+    };
+
+    await this.dependencies.eventRepository.save(
+      event,
+    );
+  }
+}
+
+
+
+##################################################
+src/domains/tasks/services/task-lifecycle.service.ts
+##################################################
+import type { Task } from "../models/task.model";
+
+import type {
+  PauseTaskCommand,
+  ResumeTaskCommand,
+  CompleteTaskCommand,
+  CancelTaskCommand,
+} from "./task-lifecycle.commands";
+
+export interface TaskLifecycleService {
+  pauseTask(
+    command: PauseTaskCommand,
+  ): Promise<Task>;
+
+  resumeTask(
+    command: ResumeTaskCommand,
+  ): Promise<Task>;
+
+  completeTask(
+    command: CompleteTaskCommand,
+  ): Promise<Task>;
+
+  cancelTask(
+    command: CancelTaskCommand,
+  ): Promise<Task>;
+}
+
+##################################################
+src/domains/tasks/services/task-query.dependencies.ts
+##################################################
+import type { TaskRepository } from "../repositories/task.repository";
+
+export interface TaskQueryDependencies {
+  taskRepository: TaskRepository;
+}
+
+##################################################
+src/domains/tasks/services/task-query.service.impl.ts
+##################################################
+import type { Task } from "../models/task.model";
+import type { TaskStatus } from "../models/task-status";
+
+import type { TaskQueryDependencies } from "./task-query.dependencies";
+
+import type { TaskQueryService } from "./task-query.service";
+
+export class TaskQueryServiceImpl
+  implements TaskQueryService
+{
+  private readonly taskRepository;
+
+  constructor(
+    dependencies: TaskQueryDependencies,
+  ) {
+    this.taskRepository =
+      dependencies.taskRepository;
+  }
+
+  async getTaskByKey(
+    taskKey: string,
+  ): Promise<Task | null> {
+    return this.taskRepository.findByKey(
+      taskKey,
+    );
+  }
+
+  async getTasksByWorkDay(
+    workDayKey: string,
+  ): Promise<Task[]> {
+    return this.taskRepository.findByWorkDay(
+      workDayKey,
+    );
+  }
+
+  async getTasksByStatus(
+    status: TaskStatus,
+  ): Promise<Task[]> {
+    return this.taskRepository.findByStatus(
+      status,
+    );
+  }
+
+  async getActiveTasks(): Promise<Task[]> {
+    return this.taskRepository.findActiveTasks();
+  }
+}
+
+##################################################
+src/domains/tasks/services/task-query.service.ts
+##################################################
+import type { Task } from "../models/task.model";
+import type { TaskStatus } from "../models/task-status";
+
+export interface TaskQueryService {
+  getTaskByKey(
+    taskKey: string,
+  ): Promise<Task | null>;
+
+  getTasksByWorkDay(
+    workDayKey: string,
+  ): Promise<Task[]>;
+
+  getTasksByStatus(
+    status: TaskStatus,
+  ): Promise<Task[]>;
+
+  getActiveTasks(): Promise<Task[]>;
+}
+
+##################################################
+src/domains/tasks/services/task-transition-rules.ts
+##################################################
+import type { TaskStatus } from "../models/task-status";
+
+export const TASK_TRANSITIONS: Record<
+  TaskStatus,
+  TaskStatus[]
+> = {
+  active: [
+    "paused",
+    "completed",
+    "cancelled",
+  ],
+
+  paused: [
+    "active",
+    "completed",
+    "cancelled",
+  ],
+
+  completed: [],
+
+  cancelled: [],
+};
+
+##################################################
+src/domains/work-days/dtos/work-day-details.dto.ts
+##################################################
+import type { Task } from "../../tasks/models/task.model";
+import type { WorkDay } from "../models/work-day.model";
+
+export interface WorkDayDetails {
+  workDay: WorkDay;
+
+  tasks: Task[];
+}
+
+##################################################
+src/domains/work-days/dtos/work-day-summary.dto.ts
+##################################################
+export interface WorkDaySummary {
+  dayKey: string;
+
+  taskCount: number;
+}
+
+##################################################
+src/domains/work-days/models/work-day.model.ts
+##################################################
+export interface WorkDay {
+  dayKey: string;
+}
+
+##################################################
+src/domains/work-days/services/work-day-query.dependencies.ts
+##################################################
+import type { TaskRepository } from "../../tasks/repositories/task.repository";
+
+export interface WorkDayQueryDependencies {
+  taskRepository: TaskRepository;
+}
+
+##################################################
+src/domains/work-days/services/work-day-query.service.impl.ts
+##################################################
+import type { Task } from "../../tasks/models/task.model";
+
+import type { WorkDayDetails } from "../dtos/work-day-details.dto";
+import type { WorkDay } from "../models/work-day.model";
+
+import type { WorkDayQueryDependencies } from "./work-day-query.dependencies";
+import type { WorkDayQueryService } from "./work-day-query.service";
+
+export class WorkDayQueryServiceImpl
+  implements WorkDayQueryService
+{
+  private readonly taskRepository;
+
+  constructor(
+    dependencies: WorkDayQueryDependencies,
+  ) {
+    this.taskRepository =
+      dependencies.taskRepository;
+  }
+
+  async getWorkDay(
+    dayKey: string,
+  ): Promise<WorkDay | null> {
+    const tasks =
+      await this.taskRepository.findByWorkDay(
+        dayKey,
+      );
+
+    if (tasks.length === 0) {
+      return null;
+    }
+
+    return {
+      dayKey,
+    };
+  }
+
+  async getWorkDayTasks(
+    dayKey: string,
+  ): Promise<Task[]> {
+    return this.taskRepository.findByWorkDay(
+      dayKey,
+    );
+  }
+
+  async getWorkDayDetails(
+    dayKey: string,
+  ): Promise<WorkDayDetails | null> {
+    const tasks =
+      await this.taskRepository.findByWorkDay(
+        dayKey,
+      );
+
+    if (tasks.length === 0) {
+      return null;
+    }
+
+    return {
+      workDay: {
+        dayKey,
+      },
+      tasks,
+    };
+  }
+
+  async getWorkDays(
+    startDayKey: string,
+    endDayKey: string,
+  ): Promise<WorkDay[]> {
+    const tasks =
+      await this.taskRepository.findAll();
+
+    const dayKeys = [
+      ...new Set(
+        tasks
+          .map((task) => task.workDayKey)
+          .filter(
+            (dayKey) =>
+              dayKey >= startDayKey &&
+              dayKey <= endDayKey,
+          ),
+      ),
+    ];
+
+    return dayKeys.map(
+      (dayKey): WorkDay => ({
+        dayKey,
+      }),
+    );
+  }
+}
+
+
+##################################################
+src/domains/work-days/services/work-day-query.service.ts
+##################################################
+import type { Task } from "../../tasks/models/task.model";
+
+import type { WorkDayDetails } from "../dtos/work-day-details.dto";
+import type { WorkDay } from "../models/work-day.model";
+
+export interface WorkDayQueryService {
+  getWorkDay(
+    dayKey: string,
+  ): Promise<WorkDay | null>;
+
+  getWorkDayTasks(
+    dayKey: string,
+  ): Promise<Task[]>;
+
+  getWorkDayDetails(
+    dayKey: string,
+  ): Promise<WorkDayDetails | null>;
+
+  getWorkDays(
+    startDayKey: string,
+    endDayKey: string,
+  ): Promise<WorkDay[]>;
+}
+
+
+##################################################
+src/infrastructure/api/clients/notion-api-client.impl.ts
+##################################################
+import { Client } from "@notionhq/client";
+
+import type { NotionApiClient } from "./notion-api-client";
+
+export class NotionApiClientImpl
+  implements NotionApiClient
+{
+  private readonly client: Client;
+
+  constructor(
+    apiKey: string,
+  ) {
+    this.client = new Client({
+      auth: apiKey,
+    });
+  }
+
+  async queryDatabase(
+    databaseId: string,
+    filter?: unknown,
+  ): Promise<unknown[]> {
+    const response =
+      await this.client.dataSources.query({
+        data_source_id: databaseId,
+        filter: filter as never,
+      });
+
+    return response.results;
+  }
+
+  async retrievePage(
+    pageId: string,
+  ): Promise<unknown> {
+    return this.client.pages.retrieve({
+      page_id: pageId,
+    });
+  }
+
+  async createPage(
+    databaseId: string,
+    properties: Record<string, unknown>,
+  ): Promise<unknown> {
+    return this.client.pages.create({
+      parent: {
+        data_source_id: databaseId,
+      },
+      properties: properties as never,
+    });
+  }
+
+  async updatePage(
+    pageId: string,
+    properties: Record<string, unknown>,
+  ): Promise<unknown> {
+    return this.client.pages.update({
+      page_id: pageId,
+      properties: properties as never,
+    });
+  }
+}
+
+
+##################################################
+src/infrastructure/api/clients/notion-api-client.ts
+##################################################
+export interface NotionApiClient {
+  queryDatabase(
+    databaseId: string,
+    filter?: unknown,
+  ): Promise<unknown[]>;
+
+  retrievePage(
+    pageId: string,
+  ): Promise<unknown>;
+
+  createPage(
+    databaseId: string,
+    properties: Record<string, unknown>,
+  ): Promise<unknown>;
+
+  updatePage(
+    pageId: string,
+    properties: Record<string, unknown>,
+  ): Promise<unknown>;
+}
+
+
+##################################################
+src/infrastructure/builders/notion-task-filter.builder.ts
+##################################################
+
+
+##################################################
+src/infrastructure/configuration/environment.configuration.ts
+##################################################
+export interface EnvironmentConfiguration {
+  readonly notionApiToken: string;
+
+  readonly tasksDatabaseId: string;
+
+  readonly eventsDatabaseId: string;
+
+  readonly repositoryProvider:
+    | "memory"
+    | "notion";
+}
+
+##################################################
+src/infrastructure/configuration/notion.configuration.ts
+##################################################
+import { ConfigurationError } from "../errors/configuration.error";
+
+import type { EnvironmentConfiguration } from "./environment.configuration";
+
+export function createNotionConfiguration(): EnvironmentConfiguration {
+  const repositoryProvider =
+    import.meta.env.VITE_REPOSITORY_PROVIDER;
+
+  const notionApiToken =
+    import.meta.env.VITE_NOTION_API_TOKEN;
+
+  const tasksDatabaseId =
+    import.meta.env.VITE_NOTION_TASKS_DATABASE_ID;
+
+  const eventsDatabaseId =
+    import.meta.env.VITE_NOTION_EVENTS_DATABASE_ID;
+
+  if (
+    repositoryProvider !== "memory" &&
+    repositoryProvider !== "notion"
+  ) {
+    throw new ConfigurationError(
+      "Invalid VITE_REPOSITORY_PROVIDER",
+    );
+  }
+
+  if (!notionApiToken) {
+    throw new ConfigurationError(
+      "Missing VITE_NOTION_API_TOKEN environment variable",
+    );
+  }
+
+  if (!tasksDatabaseId) {
+    throw new ConfigurationError(
+      "Missing VITE_NOTION_TASKS_DATABASE_ID environment variable",
+    );
+  }
+
+  if (!eventsDatabaseId) {
+    throw new ConfigurationError(
+      "Missing VITE_NOTION_EVENTS_DATABASE_ID environment variable",
+    );
+  }
+
+  return {
+    repositoryProvider,
+    notionApiToken,
+    tasksDatabaseId,
+    eventsDatabaseId,
+  };
+}
+
+
+##################################################
+src/infrastructure/dto/notion-event-page.dto.ts
+##################################################
+import type { EventType } from "../../domains/event-log/models/event-type";
+
+export interface NotionEventPageDto {
+  "Event Id": string;
+
+  "Event Type": EventType;
+
+  "Entity Type": string;
+
+  "Entity Id": string;
+
+  "Occurred At": string;
+
+  Description?: string;
+}
+
+
+##################################################
+src/infrastructure/dto/notion-event.dto.ts
+##################################################
+import type { EventType } from "../../domains/event-log/models/event-type";
+
+export interface NotionEventDto {
+  eventId: string;
+
+  eventType: EventType;
+
+  entityType: string;
+
+  entityId: string;
+
+  occurredAt: string;
+
+  description?: string;
+}
+
+
+##################################################
+src/infrastructure/dto/notion-task-page.dto.ts
+##################################################
+import type { TaskStatus } from "../../domains/tasks/models/task-status";
+
+export interface NotionTaskPageDto {
+  "Task Key": string;
+
+  "Work Day Key": string;
+
+  Title: string;
+
+  "Category Id": string;
+
+  "Site Id"?: string;
+
+  "Project Id"?: string;
+
+  "Start Time": string;
+
+  "End Time"?: string;
+
+  Status: TaskStatus;
+}
+
+
+##################################################
+src/infrastructure/dto/notion-task.dto.ts
+##################################################
+import type { TaskStatus } from "../../domains/tasks/models/task-status";
+
+export interface NotionTaskDto {
+  taskKey: string;
+
+  workDayKey: string;
+
+  title: string;
+
+  categoryId: string;
+
+  siteId?: string;
+
+  projectId?: string;
+
+  startTime: string;
+
+  endTime?: string;
+
+  status: TaskStatus;
+}
+
+
+##################################################
+src/infrastructure/errors/configuration.error.ts
+##################################################
+import { InfrastructureError } from "./infrastructure.error";
+
+export class ConfigurationError extends InfrastructureError {
+  public constructor(message: string) {
+    super(message);
+
+    this.name = "ConfigurationError";
+  }
+}
+
+
+##################################################
+src/infrastructure/errors/infrastructure.error.ts
+##################################################
+export class InfrastructureError extends Error {
+  public constructor(message: string) {
+    super(message);
+
+    this.name = "InfrastructureError";
+  }
+}
+
+
+##################################################
+src/infrastructure/errors/notion-api.error.ts
+##################################################
+import { InfrastructureError } from "./infrastructure.error";
+
+export class NotionApiError extends InfrastructureError {
+  public constructor(message: string) {
+    super(message);
+
+    this.name = "NotionApiError";
+  }
+}
+
+
+##################################################
+src/infrastructure/index.ts
+##################################################
+export * from "./api/clients/notion-api-client";
+
+export * from "./configuration/environment.configuration";
+export * from "./configuration/notion.configuration";
+
+export * from "./dto/notion-task.dto";
+export * from "./dto/notion-event.dto";
+
+export * from "./dto/notion-task-page.dto";
+export * from "./dto/notion-event-page.dto";
+
+export * from "./mappers/task.mapper";
+export * from "./mappers/event.mapper";
+
+export * from "./repositories/in-memory-task.repository";
+export * from "./repositories/in-memory-event.repository";
+
+export * from "./errors/infrastructure.error";
+export * from "./errors/notion-api.error";
+export * from "./errors/configuration.error";
+
+export * from "./mappers/notion-task-page.mapper";
+export * from "./mappers/notion-event-page.mapper";
+
+export * from "./api/clients/notion-api-client.impl";
+
+export * from "./mappers/notion-task-properties.mapper";
+export * from "./mappers/notion-event-properties.mapper";
+
+export * from "./repositories/notion-event.repository";
+
+export * from "./mappers/notion-task-page.extractor";
+
+export * from "./mappers/notion-page-id.extractor";
+
+export * from "./repositories/notion-task.repository";
+
+##################################################
+src/infrastructure/mappers/event.mapper.ts
+##################################################
+import type { EventLog } from "../../domains/event-log/models/event.model";
+import type { NotionEventDto } from "../dto/notion-event.dto";
+
+export class EventMapper {
+  public static toDomain(
+    dto: NotionEventDto,
+  ): EventLog {
+    return {
+      eventId: dto.eventId,
+      eventType: dto.eventType,
+      entityType: dto.entityType,
+      entityId: dto.entityId,
+      occurredAt: dto.occurredAt,
+      description: dto.description,
+    };
+  }
+
+  public static toDto(
+    event: EventLog,
+  ): NotionEventDto {
+    return {
+      eventId: event.eventId,
+      eventType: event.eventType,
+      entityType: event.entityType,
+      entityId: event.entityId,
+      occurredAt: event.occurredAt,
+      description: event.description,
+    };
+  }
+}
+
+
+##################################################
+src/infrastructure/mappers/notion-event-page.mapper.ts
+##################################################
+import type { EventLog } from "../../domains/event-log/models/event.model";
+
+import type { NotionEventPageDto } from "../dto/notion-event-page.dto";
+
+export class NotionEventPageMapper {
+  public static toPageDto(
+    event: EventLog,
+  ): NotionEventPageDto {
+    return {
+      "Event Id": event.eventId,
+
+      "Event Type": event.eventType,
+
+      "Entity Type": event.entityType,
+
+      "Entity Id": event.entityId,
+
+      "Occurred At": event.occurredAt,
+
+      Description: event.description,
+    };
+  }
+
+  public static toDomain(
+    dto: NotionEventPageDto,
+  ): EventLog {
+    return {
+      eventId: dto["Event Id"],
+
+      eventType: dto["Event Type"],
+
+      entityType: dto["Entity Type"],
+
+      entityId: dto["Entity Id"],
+
+      occurredAt: dto["Occurred At"],
+
+      description: dto.Description,
+    };
+  }
+}
+
+
+##################################################
+src/infrastructure/mappers/notion-event-properties.mapper.ts
+##################################################
+import type { NotionEventPageDto } from "../dto/notion-event-page.dto";
+
+export class NotionEventPropertiesMapper {
+  public static toProperties(
+    dto: NotionEventPageDto,
+  ): Record<string, unknown> {
+    return {
+      "Event Id": {
+        rich_text: [
+          {
+            text: {
+              content: dto["Event Id"],
+            },
+          },
+        ],
+      },
+
+      "Event Type": {
+        select: {
+          name: dto["Event Type"],
+        },
+      },
+
+      "Entity Type": {
+        rich_text: [
+          {
+            text: {
+              content: dto["Entity Type"],
+            },
+          },
+        ],
+      },
+
+      "Entity Id": {
+        rich_text: [
+          {
+            text: {
+              content: dto["Entity Id"],
+            },
+          },
+        ],
+      },
+
+      "Occurred At": {
+        rich_text: [
+          {
+            text: {
+              content: dto["Occurred At"],
+            },
+          },
+        ],
+      },
+
+      Description: {
+        rich_text: [
+          {
+            text: {
+              content: dto.Description ?? "",
+            },
+          },
+        ],
+      },
+    };
+  }
+}
+
+
+##################################################
+src/infrastructure/mappers/notion-page-id.extractor.ts
+##################################################
+export class NotionPageIdExtractor {
+  public static extract(
+    page: unknown,
+  ): string {
+    const notionPage =
+      page as {
+        id?: string;
+      };
+
+    return notionPage.id ?? "";
+  }
+}
+
+##################################################
+src/infrastructure/mappers/notion-task-page.extractor.ts
+##################################################
+import type { NotionTaskPageDto } from "../dto/notion-task-page.dto";
+
+export class NotionTaskPageExtractor {
+  public static extract(
+    page: any,
+  ): NotionTaskPageDto {
+    const properties =
+      page.properties;
+
+    return {
+      "Task Key":
+        properties["Task Key"]
+          ?.rich_text?.[0]
+          ?.plain_text ?? "",
+
+      "Work Day Key":
+        properties["Work Day Key"]
+          ?.rich_text?.[0]
+          ?.plain_text ?? "",
+
+      Title:
+        properties.Title
+          ?.title?.[0]
+          ?.plain_text ?? "",
+
+      "Category Id":
+        properties["Category Id"]
+          ?.rich_text?.[0]
+          ?.plain_text ?? "",
+
+      "Site Id":
+        properties["Site Id"]
+          ?.rich_text?.[0]
+          ?.plain_text,
+
+      "Project Id":
+        properties["Project Id"]
+          ?.rich_text?.[0]
+          ?.plain_text,
+
+      "Start Time":
+        properties["Start Time"]
+          ?.rich_text?.[0]
+          ?.plain_text ?? "",
+
+      "End Time":
+        properties["End Time"]
+          ?.rich_text?.[0]
+          ?.plain_text,
+
+      Status:
+        properties.Status
+          ?.select?.name,
+    };
+  }
+}
+
+##################################################
+src/infrastructure/mappers/notion-task-page.mapper.ts
+##################################################
+import type { Task } from "../../domains/tasks/models/task.model";
+
+import type { NotionTaskPageDto } from "../dto/notion-task-page.dto";
+
+export class NotionTaskPageMapper {
+  public static toPageDto(
+    task: Task,
+  ): NotionTaskPageDto {
+    return {
+      "Task Key": task.taskKey,
+
+      "Work Day Key": task.workDayKey,
+
+      Title: task.title,
+
+      "Category Id": task.categoryId,
+
+      "Site Id": task.siteId,
+
+      "Project Id": task.projectId,
+
+      "Start Time": task.startTime,
+
+      "End Time": task.endTime,
+
+      Status: task.status,
+    };
+  }
+
+  public static toDomain(
+    dto: NotionTaskPageDto,
+  ): Task {
+    return {
+      taskKey: dto["Task Key"],
+
+      workDayKey: dto["Work Day Key"],
+
+      title: dto.Title,
+
+      categoryId: dto["Category Id"],
+
+      siteId: dto["Site Id"],
+
+      projectId: dto["Project Id"],
+
+      startTime: dto["Start Time"],
+
+      endTime: dto["End Time"],
+
+      status: dto.Status,
+    };
+  }
+}
+
+
+##################################################
+src/infrastructure/mappers/notion-task-properties.mapper.ts
+##################################################
+import type { NotionTaskPageDto } from "../dto/notion-task-page.dto";
+
+export class NotionTaskPropertiesMapper {
+  public static toProperties(
+    dto: NotionTaskPageDto,
+  ): Record<string, unknown> {
+    return {
+      "Task Key": {
+        rich_text: [
+          {
+            text: {
+              content: dto["Task Key"],
+            },
+          },
+        ],
+      },
+
+      "Work Day Key": {
+        rich_text: [
+          {
+            text: {
+              content: dto["Work Day Key"],
+            },
+          },
+        ],
+      },
+
+      Title: {
+        title: [
+          {
+            text: {
+              content: dto.Title,
+            },
+          },
+        ],
+      },
+
+      "Category Id": {
+        rich_text: [
+          {
+            text: {
+              content: dto["Category Id"],
+            },
+          },
+        ],
+      },
+
+      "Site Id": {
+        rich_text: [
+          {
+            text: {
+              content: dto["Site Id"] ?? "",
+            },
+          },
+        ],
+      },
+
+      "Project Id": {
+        rich_text: [
+          {
+            text: {
+              content: dto["Project Id"] ?? "",
+            },
+          },
+        ],
+      },
+
+      "Start Time": {
+        rich_text: [
+          {
+            text: {
+              content: dto["Start Time"],
+            },
+          },
+        ],
+      },
+
+      "End Time": {
+        rich_text: [
+          {
+            text: {
+              content: dto["End Time"] ?? "",
+            },
+          },
+        ],
+      },
+
+      Status: {
+        select: {
+          name: dto.Status,
+        },
+      },
+    };
+  }
+}
+
+
+##################################################
+src/infrastructure/mappers/task.mapper.ts
+##################################################
+import type { Task } from "../../domains/tasks/models/task.model";
+import type { NotionTaskDto } from "../dto/notion-task.dto";
+
+export class TaskMapper {
+  public static toDomain(
+    dto: NotionTaskDto,
+  ): Task {
+    return {
+      taskKey: dto.taskKey,
+      workDayKey: dto.workDayKey,
+      title: dto.title,
+      categoryId: dto.categoryId,
+      siteId: dto.siteId,
+      projectId: dto.projectId,
+      startTime: dto.startTime,
+      endTime: dto.endTime,
+      status: dto.status,
+    };
+  }
+
+  public static toDto(
+    task: Task,
+  ): NotionTaskDto {
+    return {
+      taskKey: task.taskKey,
+      workDayKey: task.workDayKey,
+      title: task.title,
+      categoryId: task.categoryId,
+      siteId: task.siteId,
+      projectId: task.projectId,
+      startTime: task.startTime,
+      endTime: task.endTime,
+      status: task.status,
+    };
+  }
+}
+
+
+##################################################
+src/infrastructure/repositories/in-memory-event.repository.ts
+##################################################
+import type { EventRepository } from "../../domains/event-log/repositories/event.repository";
+import type { EventLog } from "../../domains/event-log/models/event.model";
+
+export class InMemoryEventRepository
+  implements EventRepository
+{
+  private readonly events = new Map<
+    string,
+    EventLog
+  >();
+
+  public async save(
+    event: EventLog,
+  ): Promise<void> {
+    this.events.set(
+      event.eventId,
+      event,
+    );
+  }
+}
+
+
+##################################################
+src/infrastructure/repositories/in-memory-task.repository.ts
+##################################################
+import type { TaskRepository } from "../../domains/tasks/repositories/task.repository";
+import type { Task } from "../../domains/tasks/models/task.model";
+import type { TaskStatus } from "../../domains/tasks/models/task-status";
+
+export class InMemoryTaskRepository
+  implements TaskRepository
+{
+  private readonly tasks = new Map<string, Task>();
+
+  public async findByKey(
+    taskKey: string,
+  ): Promise<Task | null> {
+    return this.tasks.get(taskKey) ?? null;
+  }
+
+  public async findByWorkDay(
+    workDayKey: string,
+  ): Promise<Task[]> {
+    return [...this.tasks.values()].filter(
+      (task) => task.workDayKey === workDayKey,
+    );
+  }
+
+  public async findByStatus(
+    status: TaskStatus,
+  ): Promise<Task[]> {
+    return [...this.tasks.values()].filter(
+      (task) => task.status === status,
+    );
+  }
+
+  public async findActiveTasks(): Promise<Task[]> {
+    return [...this.tasks.values()].filter(
+      (task) => task.status === "active",
+    );
+  }
+
+  public async findAll(): Promise<Task[]> {
+    return [...this.tasks.values()];
+  }
+
+  public async save(
+    task: Task,
+  ): Promise<void> {
+    this.tasks.set(
+      task.taskKey,
+      task,
+    );
+  }
+}
+
+
+##################################################
+src/infrastructure/repositories/notion-event.repository.ts
+##################################################
+import type { EventLog } from "../../domains/event-log/models/event.model";
+
+import type { EventRepository } from "../../domains/event-log/repositories/event.repository";
+
+import type { NotionApiClient } from "../api/clients/notion-api-client";
+
+import type { EnvironmentConfiguration } from "../configuration/environment.configuration";
+
+import { NotionEventPageMapper } from "../mappers/notion-event-page.mapper";
+
+import { NotionEventPropertiesMapper } from "../mappers/notion-event-properties.mapper";
+
+export class NotionEventRepository
+  implements EventRepository
+{
+  private readonly notionClient: NotionApiClient;
+
+  private readonly configuration: EnvironmentConfiguration;
+
+  constructor(
+    notionClient: NotionApiClient,
+    configuration: EnvironmentConfiguration,
+  ) {
+    this.notionClient = notionClient;
+
+    this.configuration = configuration;
+  }
+
+  public async save(
+    event: EventLog,
+  ): Promise<void> {
+    const dto =
+      NotionEventPageMapper.toPageDto(
+        event,
+      );
+
+    const properties =
+      NotionEventPropertiesMapper.toProperties(
+        dto,
+      );
+
+    await this.notionClient.createPage(
+      this.configuration.eventsDatabaseId,
+      properties,
+    );
+  }
+}
+
+
+##################################################
+src/infrastructure/repositories/notion-task.repository.ts
+##################################################
+import type { Task } from "../../domains/tasks/models/task.model";
+import type { TaskStatus } from "../../domains/tasks/models/task-status";
+import type { TaskRepository } from "../../domains/tasks/repositories/task.repository";
+
+import type { NotionApiClient } from "../api/clients/notion-api-client";
+import type { EnvironmentConfiguration } from "../configuration/environment.configuration";
+
+import { NotionTaskPageExtractor } from "../mappers/notion-task-page.extractor";
+import { NotionTaskPageMapper } from "../mappers/notion-task-page.mapper";
+import { NotionTaskPropertiesMapper } from "../mappers/notion-task-properties.mapper";
+import { NotionPageIdExtractor } from "../mappers/notion-page-id.extractor";
+
+export class NotionTaskRepository
+  implements TaskRepository
+{
+  private readonly notionClient: NotionApiClient;
+
+  private readonly configuration: EnvironmentConfiguration;
+
+  constructor(
+    notionClient: NotionApiClient,
+    configuration: EnvironmentConfiguration,
+  ) {
+    this.notionClient = notionClient;
+    this.configuration = configuration;
+  }
+
+  public async findByKey(
+    taskKey: string,
+  ): Promise<Task | null> {
+    const pages =
+      await this.notionClient.queryDatabase(
+        this.configuration.tasksDatabaseId,
+        {
+          property: "Task Key",
+          rich_text: {
+            equals: taskKey,
+          },
+        },
+      );
+
+    const page = pages[0];
+
+    if (!page) {
+      return null;
+    }
+
+    const dto =
+      NotionTaskPageExtractor.extract(
+        page,
+      );
+
+    return NotionTaskPageMapper.toDomain(
+      dto,
+    );
+  }
+
+  public async findByWorkDay(
+    workDayKey: string,
+  ): Promise<Task[]> {
+    const pages =
+      await this.notionClient.queryDatabase(
+        this.configuration.tasksDatabaseId,
+        {
+          property: "Work Day Key",
+          rich_text: {
+            equals: workDayKey,
+          },
+        },
+      );
+
+    return pages.map(
+      (page) =>
+        NotionTaskPageMapper.toDomain(
+          NotionTaskPageExtractor.extract(
+            page,
+          ),
+        ),
+    );
+  }
+
+  public async findByStatus(
+    status: TaskStatus,
+  ): Promise<Task[]> {
+    const pages =
+      await this.notionClient.queryDatabase(
+        this.configuration.tasksDatabaseId,
+        {
+          property: "Status",
+          select: {
+            equals: status,
+          },
+        },
+      );
+
+    return pages.map(
+      (page) =>
+        NotionTaskPageMapper.toDomain(
+          NotionTaskPageExtractor.extract(
+            page,
+          ),
+        ),
+    );
+  }
+
+  public async findActiveTasks(): Promise<Task[]> {
+    return this.findByStatus(
+      "active",
+    );
+  }
+
+  public async findAll(): Promise<Task[]> {
+    const pages =
+      await this.notionClient.queryDatabase(
+        this.configuration.tasksDatabaseId,
+      );
+
+    return pages.map(
+      (page) =>
+        NotionTaskPageMapper.toDomain(
+          NotionTaskPageExtractor.extract(
+            page,
+          ),
+        ),
+    );
+  }
+
+  public async save(
+    task: Task,
+  ): Promise<void> {
+    const existingTask =
+      await this.findPageByTaskKey(
+        task.taskKey,
+      );
+
+    const dto =
+      NotionTaskPageMapper.toPageDto(
+        task,
+      );
+
+    const properties =
+      NotionTaskPropertiesMapper.toProperties(
+        dto,
+      );
+
+    if (!existingTask) {
+      await this.notionClient.createPage(
+        this.configuration.tasksDatabaseId,
+        properties,
+      );
+
+      return;
+    }
+
+    const pageId =
+      NotionPageIdExtractor.extract(
+        existingTask,
+      );
+
+    await this.notionClient.updatePage(
+      pageId,
+      properties,
+    );
+  }
+
+  private async findPageByTaskKey(
+    taskKey: string,
+  ): Promise<unknown | null> {
+    const pages =
+      await this.notionClient.queryDatabase(
+        this.configuration.tasksDatabaseId,
+        {
+          property: "Task Key",
+          rich_text: {
+            equals: taskKey,
+          },
+        },
+      );
+
+    return pages[0] ?? null;
+  }
+}
+
+##################################################
+src/shared/types/date-time.ts
+##################################################
+export type DateTimeString = string;
+
+##################################################
+src/shared/types/vite-env.d.ts
+##################################################
+interface ImportMetaEnv {
+  readonly VITE_REPOSITORY_PROVIDER:
+    | "memory"
+    | "notion";
+
+  readonly VITE_NOTION_API_TOKEN: string;
+
+  readonly VITE_NOTION_TASKS_DATABASE_ID: string;
+
+  readonly VITE_NOTION_EVENTS_DATABASE_ID: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+

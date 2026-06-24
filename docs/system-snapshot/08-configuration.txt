@@ -1,0 +1,82 @@
+==================================================
+src/infrastructure/configuration/environment.configuration.ts
+==================================================
+export interface EnvironmentConfiguration {
+  readonly notionApiToken: string;
+
+  readonly tasksDatabaseId: string;
+
+  readonly eventsDatabaseId: string;
+
+  readonly repositoryProvider:
+    | "memory"
+    | "notion";
+}
+==================================================
+src/infrastructure/configuration/notion.configuration.ts
+==================================================
+import { ConfigurationError } from "../errors/configuration.error";
+
+import type { EnvironmentConfiguration } from "./environment.configuration";
+
+export function createNotionConfiguration(): EnvironmentConfiguration {
+  const repositoryProvider =
+    import.meta.env.VITE_REPOSITORY_PROVIDER;
+
+  const notionApiToken =
+    import.meta.env.VITE_NOTION_API_TOKEN;
+
+  const tasksDatabaseId =
+    import.meta.env.VITE_NOTION_TASKS_DATABASE_ID;
+
+  const eventsDatabaseId =
+    import.meta.env.VITE_NOTION_EVENTS_DATABASE_ID;
+
+  if (
+    repositoryProvider !== "memory" &&
+    repositoryProvider !== "notion"
+  ) {
+    throw new ConfigurationError(
+      "Invalid VITE_REPOSITORY_PROVIDER",
+    );
+  }
+
+  if (!notionApiToken) {
+    throw new ConfigurationError(
+      "Missing VITE_NOTION_API_TOKEN environment variable",
+    );
+  }
+
+  if (!tasksDatabaseId) {
+    throw new ConfigurationError(
+      "Missing VITE_NOTION_TASKS_DATABASE_ID environment variable",
+    );
+  }
+
+  if (!eventsDatabaseId) {
+    throw new ConfigurationError(
+      "Missing VITE_NOTION_EVENTS_DATABASE_ID environment variable",
+    );
+  }
+
+  return {
+    repositoryProvider,
+    notionApiToken,
+    tasksDatabaseId,
+    eventsDatabaseId,
+  };
+}
+
+==================================================
+src/infrastructure/errors/configuration.error.ts
+==================================================
+import { InfrastructureError } from "./infrastructure.error";
+
+export class ConfigurationError extends InfrastructureError {
+  public constructor(message: string) {
+    super(message);
+
+    this.name = "ConfigurationError";
+  }
+}
+
