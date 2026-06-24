@@ -2,9 +2,15 @@ import type { TaskRepository } from "../domains/tasks/repositories/task.reposito
 
 import type { EventRepository } from "../domains/event-log/repositories/event.repository";
 
-import { InMemoryTaskRepository } from "../infrastructure/repositories/in-memory-task.repository";
+import type { EnvironmentConfiguration } from "../infrastructure/configuration/environment.configuration";
 
+import { NotionApiClientImpl } from "../infrastructure/api/clients/notion-api-client.impl";
+
+import { InMemoryTaskRepository } from "../infrastructure/repositories/in-memory-task.repository";
 import { InMemoryEventRepository } from "../infrastructure/repositories/in-memory-event.repository";
+
+import { NotionTaskRepository } from "../infrastructure/repositories/notion-task.repository";
+import { NotionEventRepository } from "../infrastructure/repositories/notion-event.repository";
 
 export interface RepositoryFactory {
   createTaskRepository(): TaskRepository;
@@ -22,4 +28,52 @@ export class InMemoryRepositoryFactory
   public createEventRepository(): EventRepository {
     return new InMemoryEventRepository();
   }
+}
+
+export class NotionRepositoryFactory
+  implements RepositoryFactory
+{
+  private readonly configuration: EnvironmentConfiguration;
+
+  private readonly notionClient: NotionApiClientImpl;
+
+  constructor(
+    configuration: EnvironmentConfiguration,
+  ) {
+    this.configuration = configuration;
+
+    this.notionClient =
+      new NotionApiClientImpl(
+        configuration.notionApiToken,
+      );
+  }
+
+  public createTaskRepository(): TaskRepository {
+    return new NotionTaskRepository(
+      this.notionClient,
+      this.configuration,
+    );
+  }
+
+  public createEventRepository(): EventRepository {
+    return new NotionEventRepository(
+      this.notionClient,
+      this.configuration,
+    );
+  }
+}
+
+export function createRepositoryFactory(
+  configuration: EnvironmentConfiguration,
+): RepositoryFactory {
+  if (
+    configuration.repositoryProvider ===
+    "memory"
+  ) {
+    return new InMemoryRepositoryFactory();
+  }
+
+  return new NotionRepositoryFactory(
+    configuration,
+  );
 }
