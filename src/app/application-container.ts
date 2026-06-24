@@ -15,7 +15,11 @@ import {
 } from "../domains/work-days/services/work-day-query.service.impl";
 
 import {
-  InMemoryRepositoryFactory,
+  createNotionConfiguration,
+} from "../infrastructure/configuration/notion.configuration";
+
+import {
+  createRepositoryFactory,
 } from "./repository.factory";
 
 export class ApplicationContainer {
@@ -32,8 +36,13 @@ export class ApplicationContainer {
   public readonly workDayQueryService;
 
   constructor() {
+    const configuration =
+      createNotionConfiguration();
+
     const repositoryFactory =
-      new InMemoryRepositoryFactory();
+      createRepositoryFactory(
+        configuration,
+      );
 
     this.taskRepository =
       repositoryFactory.createTaskRepository();
