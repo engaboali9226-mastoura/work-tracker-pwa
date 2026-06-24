@@ -15,12 +15,8 @@ import {
 } from "../domains/work-days/services/work-day-query.service.impl";
 
 import {
-  InMemoryTaskRepository,
-} from "../infrastructure/repositories/in-memory-task.repository";
-
-import {
-  InMemoryEventRepository,
-} from "../infrastructure/repositories/in-memory-event.repository";
+  InMemoryRepositoryFactory,
+} from "./repository.factory";
 
 export class ApplicationContainer {
   public readonly taskRepository;
@@ -36,11 +32,14 @@ export class ApplicationContainer {
   public readonly workDayQueryService;
 
   constructor() {
+    const repositoryFactory =
+      new InMemoryRepositoryFactory();
+
     this.taskRepository =
-      new InMemoryTaskRepository();
+      repositoryFactory.createTaskRepository();
 
     this.eventRepository =
-      new InMemoryEventRepository();
+      repositoryFactory.createEventRepository();
 
     this.taskCreationService =
       new TaskCreationServiceImpl({
