@@ -28,3 +28,5 @@ export * from "./mappers/notion-task-properties.mapper";
 export * from "./mappers/notion-event-properties.mapper";
 
 export * from "./repositories/notion-event.repository";
+
+export * from "./mappers/notion-task-page.extractor";
