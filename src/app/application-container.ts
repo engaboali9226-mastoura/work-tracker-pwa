@@ -1,10 +1,10 @@
 import {
-  TaskCategoryQueryServiceImpl,
-} from "../domains/task-categories/services/task-category-query.service.impl";
+  AreaQueryServiceImpl,
+} from "../domains/areas/services/area-query.service.impl";
 
 import {
-  SubCategoryQueryServiceImpl,
-} from "../domains/sub-categories/services/sub-category-query.service.impl";
+  ContractorQueryServiceImpl,
+} from "../domains/contractors/services/contractor-query.service.impl";
 
 import {
   ProductionRecordCreationServiceImpl,
@@ -13,6 +13,22 @@ import {
 import {
   ProductionRecordQueryServiceImpl,
 } from "../domains/production-records/services/production-record-query.service.impl";
+
+import {
+  ProjectQueryServiceImpl,
+} from "../domains/projects/services/project-query.service.impl";
+
+import {
+  SiteQueryServiceImpl,
+} from "../domains/sites/services/site-query.service.impl";
+
+import {
+  SubCategoryQueryServiceImpl,
+} from "../domains/sub-categories/services/sub-category-query.service.impl";
+
+import {
+  TaskCategoryQueryServiceImpl,
+} from "../domains/task-categories/services/task-category-query.service.impl";
 
 import {
   TaskCreationServiceImpl,
@@ -72,6 +88,14 @@ export class ApplicationContainer {
   public readonly workDayCreationService;
 
   public readonly workDayQueryService;
+
+  public readonly areaQueryService;
+
+  public readonly siteQueryService;
+
+  public readonly projectQueryService;
+
+  public readonly contractorQueryService;
 
   public readonly taskCategoryQueryService;
 
@@ -172,6 +196,30 @@ export class ApplicationContainer {
 
         workDayRepository:
           this.workDayRepository,
+      });
+
+    this.areaQueryService =
+      new AreaQueryServiceImpl({
+        areaRepository:
+          this.areaRepository,
+      });
+
+    this.siteQueryService =
+      new SiteQueryServiceImpl({
+        siteRepository:
+          this.siteRepository,
+      });
+
+    this.projectQueryService =
+      new ProjectQueryServiceImpl({
+        projectRepository:
+          this.projectRepository,
+      });
+
+    this.contractorQueryService =
+      new ContractorQueryServiceImpl({
+        contractorRepository:
+          this.contractorRepository,
       });
 
     this.taskCategoryQueryService =
