@@ -1,6 +1,4 @@
-import type { WorkDayStatus } from "./work-day-status";
-
-export interface WorkDay {
+export interface CreateWorkDayCommand {
   dayKey: string;
 
   date: string;
@@ -16,8 +14,4 @@ export interface WorkDay {
   contractNumber: string;
 
   startedAt: string;
-
-  endedAt?: string;
-
-  status: WorkDayStatus;
 }

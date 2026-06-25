@@ -1,6 +1,99 @@
+==================================================
+application-container.ts
+==================================================
+import {
+  TaskCreationServiceImpl,
+} from "../domains/tasks/services/task-creation.service.impl";
+
+import {
+  TaskLifecycleServiceImpl,
+} from "../domains/tasks/services/task-lifecycle.service.impl";
+
+import {
+  TaskQueryServiceImpl,
+} from "../domains/tasks/services/task-query.service.impl";
+
+import {
+  WorkDayQueryServiceImpl,
+} from "../domains/work-days/services/work-day-query.service.impl";
+
+import {
+  createNotionConfiguration,
+} from "../infrastructure/configuration/notion.configuration";
+
+import {
+  createRepositoryFactory,
+} from "./repository.factory";
+
+export class ApplicationContainer {
+  public readonly taskRepository;
+
+  public readonly eventRepository;
+
+  public readonly taskCreationService;
+
+  public readonly taskLifecycleService;
+
+  public readonly taskQueryService;
+
+  public readonly workDayQueryService;
+
+  constructor() {
+    const configuration =
+      createNotionConfiguration();
+
+    const repositoryFactory =
+      createRepositoryFactory(
+        configuration,
+      );
+
+    this.taskRepository =
+      repositoryFactory.createTaskRepository();
+
+    this.eventRepository =
+      repositoryFactory.createEventRepository();
+
+    this.taskCreationService =
+      new TaskCreationServiceImpl({
+        taskRepository:
+          this.taskRepository,
+
+        eventRepository:
+          this.eventRepository,
+      });
+
+    this.taskLifecycleService =
+      new TaskLifecycleServiceImpl({
+        taskRepository:
+          this.taskRepository,
+
+        eventRepository:
+          this.eventRepository,
+      });
+
+    this.taskQueryService =
+      new TaskQueryServiceImpl({
+        taskRepository:
+          this.taskRepository,
+      });
+
+    this.workDayQueryService =
+      new WorkDayQueryServiceImpl({
+        taskRepository:
+          this.taskRepository,
+      });
+  }
+}
+
+export const applicationContainer =
+  new ApplicationContainer();
+
+==================================================
+repository.factory.ts
+==================================================
 import type { TaskRepository } from "../domains/tasks/repositories/task.repository";
+
 import type { EventRepository } from "../domains/event-log/repositories/event.repository";
-import type { WorkDayRepository } from "../domains/work-days/repositories/work-day.repository";
 
 import type { EnvironmentConfiguration } from "../infrastructure/configuration/environment.configuration";
 
@@ -8,7 +101,6 @@ import { NotionApiClientImpl } from "../infrastructure/api/clients/notion-api-cl
 
 import { InMemoryTaskRepository } from "../infrastructure/repositories/in-memory-task.repository";
 import { InMemoryEventRepository } from "../infrastructure/repositories/in-memory-event.repository";
-import { InMemoryWorkDayRepository } from "../infrastructure/repositories/in-memory-work-day.repository";
 
 import { NotionTaskRepository } from "../infrastructure/repositories/notion-task.repository";
 import { NotionEventRepository } from "../infrastructure/repositories/notion-event.repository";
@@ -17,26 +109,17 @@ export interface RepositoryFactory {
   createTaskRepository(): TaskRepository;
 
   createEventRepository(): EventRepository;
-
-  createWorkDayRepository(): WorkDayRepository;
 }
 
 export class InMemoryRepositoryFactory
   implements RepositoryFactory
 {
-  private readonly workDayRepository =
-    new InMemoryWorkDayRepository();
-
   public createTaskRepository(): TaskRepository {
     return new InMemoryTaskRepository();
   }
 
   public createEventRepository(): EventRepository {
     return new InMemoryEventRepository();
-  }
-
-  public createWorkDayRepository(): WorkDayRepository {
-    return this.workDayRepository;
   }
 }
 
@@ -69,12 +152,6 @@ export class NotionRepositoryFactory
     return new NotionEventRepository(
       this.notionClient,
       this.configuration,
-    );
-  }
-
-  public createWorkDayRepository(): WorkDayRepository {
-    throw new Error(
-      "NotionWorkDayRepository not implemented yet.",
     );
   }
 }

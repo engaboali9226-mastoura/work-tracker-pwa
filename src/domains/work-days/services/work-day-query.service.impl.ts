@@ -11,28 +11,24 @@ export class WorkDayQueryServiceImpl
 {
   private readonly taskRepository;
 
+  private readonly workDayRepository;
+
   constructor(
     dependencies: WorkDayQueryDependencies,
   ) {
     this.taskRepository =
       dependencies.taskRepository;
+
+    this.workDayRepository =
+      dependencies.workDayRepository;
   }
 
   async getWorkDay(
     dayKey: string,
   ): Promise<WorkDay | null> {
-    const tasks =
-      await this.taskRepository.findByWorkDay(
-        dayKey,
-      );
-
-    if (tasks.length === 0) {
-      return null;
-    }
-
-    return {
+    return this.workDayRepository.findByKey(
       dayKey,
-    };
+    );
   }
 
   async getWorkDayTasks(
@@ -46,19 +42,22 @@ export class WorkDayQueryServiceImpl
   async getWorkDayDetails(
     dayKey: string,
   ): Promise<WorkDayDetails | null> {
+    const workDay =
+      await this.workDayRepository.findByKey(
+        dayKey,
+      );
+
+    if (!workDay) {
+      return null;
+    }
+
     const tasks =
       await this.taskRepository.findByWorkDay(
         dayKey,
       );
 
-    if (tasks.length === 0) {
-      return null;
-    }
-
     return {
-      workDay: {
-        dayKey,
-      },
+      workDay,
       tasks,
     };
   }
@@ -67,25 +66,13 @@ export class WorkDayQueryServiceImpl
     startDayKey: string,
     endDayKey: string,
   ): Promise<WorkDay[]> {
-    const tasks =
-      await this.taskRepository.findAll();
+    const workDays =
+      await this.workDayRepository.findAll();
 
-    const dayKeys = [
-      ...new Set(
-        tasks
-          .map((task) => task.workDayKey)
-          .filter(
-            (dayKey) =>
-              dayKey >= startDayKey &&
-              dayKey <= endDayKey,
-          ),
-      ),
-    ];
-
-    return dayKeys.map(
-      (dayKey): WorkDay => ({
-        dayKey,
-      }),
+    return workDays.filter(
+      (workDay) =>
+        workDay.dayKey >= startDayKey &&
+        workDay.dayKey <= endDayKey,
     );
   }
 }

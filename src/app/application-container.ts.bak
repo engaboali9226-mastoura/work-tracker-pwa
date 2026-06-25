@@ -11,10 +11,6 @@ import {
 } from "../domains/tasks/services/task-query.service.impl";
 
 import {
-  WorkDayCreationServiceImpl,
-} from "../domains/work-days/services/work-day-creation.service.impl";
-
-import {
   WorkDayQueryServiceImpl,
 } from "../domains/work-days/services/work-day-query.service.impl";
 
@@ -31,15 +27,11 @@ export class ApplicationContainer {
 
   public readonly eventRepository;
 
-  public readonly workDayRepository;
-
   public readonly taskCreationService;
 
   public readonly taskLifecycleService;
 
   public readonly taskQueryService;
-
-  public readonly workDayCreationService;
 
   public readonly workDayQueryService;
 
@@ -58,22 +50,10 @@ export class ApplicationContainer {
     this.eventRepository =
       repositoryFactory.createEventRepository();
 
-    this.workDayRepository =
-      repositoryFactory.createWorkDayRepository();
-
     this.taskCreationService =
       new TaskCreationServiceImpl({
         taskRepository:
           this.taskRepository,
-
-        eventRepository:
-          this.eventRepository,
-      });
-
-    this.workDayCreationService =
-      new WorkDayCreationServiceImpl({
-        workDayRepository:
-          this.workDayRepository,
 
         eventRepository:
           this.eventRepository,
@@ -98,9 +78,6 @@ export class ApplicationContainer {
       new WorkDayQueryServiceImpl({
         taskRepository:
           this.taskRepository,
-
-        workDayRepository:
-          this.workDayRepository,
       });
   }
 }
