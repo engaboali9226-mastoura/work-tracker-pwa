@@ -1,4 +1,20 @@
 import {
+  TaskCategoryQueryServiceImpl,
+} from "../domains/task-categories/services/task-category-query.service.impl";
+
+import {
+  SubCategoryQueryServiceImpl,
+} from "../domains/sub-categories/services/sub-category-query.service.impl";
+
+import {
+  ProductionRecordCreationServiceImpl,
+} from "../domains/production-records/services/production-record-creation.service.impl";
+
+import {
+  ProductionRecordQueryServiceImpl,
+} from "../domains/production-records/services/production-record-query.service.impl";
+
+import {
   TaskCreationServiceImpl,
 } from "../domains/tasks/services/task-creation.service.impl";
 
@@ -19,22 +35,6 @@ import {
 } from "../domains/work-days/services/work-day-query.service.impl";
 
 import {
-  AreaQueryServiceImpl,
-} from "../domains/areas/services/area-query.service.impl";
-
-import {
-  ProjectQueryServiceImpl,
-} from "../domains/projects/services/project-query.service.impl";
-
-import {
-  SiteQueryServiceImpl,
-} from "../domains/sites/services/site-query.service.impl";
-
-import {
-  ContractorQueryServiceImpl,
-} from "../domains/contractors/services/contractor-query.service.impl";
-
-import {
   createNotionConfiguration,
 } from "../infrastructure/configuration/notion.configuration";
 
@@ -51,11 +51,17 @@ export class ApplicationContainer {
 
   public readonly areaRepository;
 
-  public readonly projectRepository;
-
   public readonly siteRepository;
 
+  public readonly projectRepository;
+
   public readonly contractorRepository;
+
+  public readonly taskCategoryRepository;
+
+  public readonly subCategoryRepository;
+
+  public readonly productionRecordRepository;
 
   public readonly taskCreationService;
 
@@ -67,13 +73,13 @@ export class ApplicationContainer {
 
   public readonly workDayQueryService;
 
-  public readonly areaQueryService;
+  public readonly taskCategoryQueryService;
 
-  public readonly projectQueryService;
+  public readonly subCategoryQueryService;
 
-  public readonly siteQueryService;
+  public readonly productionRecordCreationService;
 
-  public readonly contractorQueryService;
+  public readonly productionRecordQueryService;
 
   constructor() {
     const configuration =
@@ -96,22 +102,43 @@ export class ApplicationContainer {
     this.areaRepository =
       repositoryFactory.createAreaRepository();
 
-    this.projectRepository =
-      repositoryFactory.createProjectRepository();
-
     this.siteRepository =
       repositoryFactory.createSiteRepository();
 
+    this.projectRepository =
+      repositoryFactory.createProjectRepository();
+
     this.contractorRepository =
       repositoryFactory.createContractorRepository();
+
+    this.taskCategoryRepository =
+      repositoryFactory
+        .createTaskCategoryRepository();
+
+    this.subCategoryRepository =
+      repositoryFactory
+        .createSubCategoryRepository();
+
+    this.productionRecordRepository =
+      repositoryFactory
+        .createProductionRecordRepository();
 
     this.taskCreationService =
       new TaskCreationServiceImpl({
         taskRepository:
           this.taskRepository,
 
+        workDayRepository:
+          this.workDayRepository,
+
         eventRepository:
           this.eventRepository,
+
+        taskCategoryRepository:
+          this.taskCategoryRepository,
+
+        subCategoryRepository:
+          this.subCategoryRepository,
       });
 
     this.workDayCreationService =
@@ -147,28 +174,31 @@ export class ApplicationContainer {
           this.workDayRepository,
       });
 
-    this.areaQueryService =
-      new AreaQueryServiceImpl({
-        areaRepository:
-          this.areaRepository,
+    this.taskCategoryQueryService =
+      new TaskCategoryQueryServiceImpl({
+        taskCategoryRepository:
+          this.taskCategoryRepository,
       });
 
-    this.projectQueryService =
-      new ProjectQueryServiceImpl({
-        projectRepository:
-          this.projectRepository,
+    this.subCategoryQueryService =
+      new SubCategoryQueryServiceImpl({
+        subCategoryRepository:
+          this.subCategoryRepository,
       });
 
-    this.siteQueryService =
-      new SiteQueryServiceImpl({
-        siteRepository:
-          this.siteRepository,
+    this.productionRecordCreationService =
+      new ProductionRecordCreationServiceImpl({
+        taskRepository:
+          this.taskRepository,
+
+        productionRecordRepository:
+          this.productionRecordRepository,
       });
 
-    this.contractorQueryService =
-      new ContractorQueryServiceImpl({
-        contractorRepository:
-          this.contractorRepository,
+    this.productionRecordQueryService =
+      new ProductionRecordQueryServiceImpl({
+        productionRecordRepository:
+          this.productionRecordRepository,
       });
   }
 }

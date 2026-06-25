@@ -9,14 +9,19 @@ export interface Task {
 
   categoryId: string;
 
-  siteId?: string;
+  subCategoryId: string;
 
-  projectId?: string;
+  areaId: string;
+
+  siteId: string;
+
+  projectId: string;
+
+  contractorId: string;
 
   startTime: string;
 
   endTime?: string;
 
   status: TaskStatus;
-
 }

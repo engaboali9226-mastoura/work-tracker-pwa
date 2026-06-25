@@ -1,4 +1,5 @@
-import type { TaskStatus } from "../../domains/tasks/models/task-status";
+import type { TaskStatus }
+  from "../../domains/tasks/models/task-status";
 
 export interface NotionTaskPageDto {
   "Task Key": string;
@@ -9,9 +10,15 @@ export interface NotionTaskPageDto {
 
   "Category Id": string;
 
-  "Site Id"?: string;
+  "Sub Category Id": string;
 
-  "Project Id"?: string;
+  "Area Id": string;
+
+  "Site Id": string;
+
+  "Project Id": string;
+
+  "Contractor Id": string;
 
   "Start Time": string;
 

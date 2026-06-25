@@ -7,6 +7,11 @@ import type { ProjectRepository } from "../domains/projects/repositories/project
 import type { SiteRepository } from "../domains/sites/repositories/site.repository";
 import type { ContractorRepository } from "../domains/contractors/repositories/contractor.repository";
 
+import type { TaskCategoryRepository } from "../domains/task-categories/repositories/task-category.repository";
+import type { SubCategoryRepository } from "../domains/sub-categories/repositories/sub-category.repository";
+
+import type { ProductionRecordRepository } from "../domains/production-records/repositories/production-record.repository";
+
 import type { EnvironmentConfiguration } from "../infrastructure/configuration/environment.configuration";
 
 import { NotionApiClientImpl } from "../infrastructure/api/clients/notion-api-client.impl";
@@ -19,6 +24,11 @@ import { InMemoryAreaRepository } from "../infrastructure/repositories/in-memory
 import { InMemoryProjectRepository } from "../infrastructure/repositories/in-memory-project.repository";
 import { InMemorySiteRepository } from "../infrastructure/repositories/in-memory-site.repository";
 import { InMemoryContractorRepository } from "../infrastructure/repositories/in-memory-contractor.repository";
+
+import { InMemoryTaskCategoryRepository } from "../infrastructure/repositories/in-memory-task-category.repository";
+import { InMemorySubCategoryRepository } from "../infrastructure/repositories/in-memory-sub-category.repository";
+
+import { InMemoryProductionRecordRepository } from "../infrastructure/repositories/in-memory-production-record.repository";
 
 import { NotionTaskRepository } from "../infrastructure/repositories/notion-task.repository";
 import { NotionEventRepository } from "../infrastructure/repositories/notion-event.repository";
@@ -37,6 +47,15 @@ export interface RepositoryFactory {
   createSiteRepository(): SiteRepository;
 
   createContractorRepository(): ContractorRepository;
+
+  createTaskCategoryRepository():
+    TaskCategoryRepository;
+
+  createSubCategoryRepository():
+    SubCategoryRepository;
+
+  createProductionRecordRepository():
+    ProductionRecordRepository;
 }
 
 export class InMemoryRepositoryFactory
@@ -71,6 +90,24 @@ export class InMemoryRepositoryFactory
 
   public createContractorRepository(): ContractorRepository {
     return new InMemoryContractorRepository();
+  }
+
+  public createTaskCategoryRepository():
+    TaskCategoryRepository
+  {
+    return new InMemoryTaskCategoryRepository();
+  }
+
+  public createSubCategoryRepository():
+    SubCategoryRepository
+  {
+    return new InMemorySubCategoryRepository();
+  }
+
+  public createProductionRecordRepository():
+    ProductionRecordRepository
+  {
+    return new InMemoryProductionRecordRepository();
   }
 }
 
@@ -133,6 +170,30 @@ export class NotionRepositoryFactory
   public createContractorRepository(): ContractorRepository {
     throw new Error(
       "NotionContractorRepository not implemented yet.",
+    );
+  }
+
+  public createTaskCategoryRepository():
+    TaskCategoryRepository
+  {
+    throw new Error(
+      "NotionTaskCategoryRepository not implemented yet.",
+    );
+  }
+
+  public createSubCategoryRepository():
+    SubCategoryRepository
+  {
+    throw new Error(
+      "NotionSubCategoryRepository not implemented yet.",
+    );
+  }
+
+  public createProductionRecordRepository():
+    ProductionRecordRepository
+  {
+    throw new Error(
+      "NotionProductionRecordRepository not implemented yet.",
     );
   }
 }

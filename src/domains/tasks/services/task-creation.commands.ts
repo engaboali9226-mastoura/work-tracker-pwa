@@ -1,15 +1,21 @@
 export interface CreateTaskCommand {
-taskKey: string;
+  taskKey: string;
 
-workDayKey: string;
+  workDayKey: string;
 
-title: string;
+  title: string;
 
-categoryId: string;
+  categoryId: string;
 
-siteId?: string;
+  subCategoryId: string;
 
-projectId?: string;
+  areaId?: string;
 
-startTime: string;
+  siteId?: string;
+
+  projectId?: string;
+
+  contractorId?: string;
+
+  startTime: string;
 }

@@ -1,6 +1,9 @@
-import type { Task } from "../../domains/tasks/models/task.model";
+import type { Task }
+  from "../../domains/tasks/models/task.model";
 
-import type { NotionTaskPageDto } from "../dto/notion-task-page.dto";
+import type {
+  NotionTaskPageDto,
+} from "../dto/notion-task-page.dto";
 
 export class NotionTaskPageMapper {
   public static toPageDto(
@@ -9,19 +12,34 @@ export class NotionTaskPageMapper {
     return {
       "Task Key": task.taskKey,
 
-      "Work Day Key": task.workDayKey,
+      "Work Day Key":
+        task.workDayKey,
 
       Title: task.title,
 
-      "Category Id": task.categoryId,
+      "Category Id":
+        task.categoryId,
 
-      "Site Id": task.siteId,
+      "Sub Category Id":
+        task.subCategoryId,
 
-      "Project Id": task.projectId,
+      "Area Id":
+        task.areaId,
 
-      "Start Time": task.startTime,
+      "Site Id":
+        task.siteId,
 
-      "End Time": task.endTime,
+      "Project Id":
+        task.projectId,
+
+      "Contractor Id":
+        task.contractorId,
+
+      "Start Time":
+        task.startTime,
+
+      "End Time":
+        task.endTime,
 
       Status: task.status,
     };
@@ -31,23 +49,41 @@ export class NotionTaskPageMapper {
     dto: NotionTaskPageDto,
   ): Task {
     return {
-      taskKey: dto["Task Key"],
+      taskKey:
+        dto["Task Key"],
 
-      workDayKey: dto["Work Day Key"],
+      workDayKey:
+        dto["Work Day Key"],
 
-      title: dto.Title,
+      title:
+        dto.Title,
 
-      categoryId: dto["Category Id"],
+      categoryId:
+        dto["Category Id"],
 
-      siteId: dto["Site Id"],
+      subCategoryId:
+        dto["Sub Category Id"],
 
-      projectId: dto["Project Id"],
+      areaId:
+        dto["Area Id"],
 
-      startTime: dto["Start Time"],
+      siteId:
+        dto["Site Id"],
 
-      endTime: dto["End Time"],
+      projectId:
+        dto["Project Id"],
 
-      status: dto.Status,
+      contractorId:
+        dto["Contractor Id"],
+
+      startTime:
+        dto["Start Time"],
+
+      endTime:
+        dto["End Time"],
+
+      status:
+        dto.Status,
     };
   }
 }

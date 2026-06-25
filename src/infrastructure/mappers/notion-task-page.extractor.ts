@@ -1,4 +1,6 @@
-import type { NotionTaskPageDto } from "../dto/notion-task-page.dto";
+import type {
+  NotionTaskPageDto,
+} from "../dto/notion-task-page.dto";
 
 export class NotionTaskPageExtractor {
   public static extract(
@@ -28,15 +30,30 @@ export class NotionTaskPageExtractor {
           ?.rich_text?.[0]
           ?.plain_text ?? "",
 
+      "Sub Category Id":
+        properties["Sub Category Id"]
+          ?.rich_text?.[0]
+          ?.plain_text ?? "",
+
+      "Area Id":
+        properties["Area Id"]
+          ?.rich_text?.[0]
+          ?.plain_text ?? "",
+
       "Site Id":
         properties["Site Id"]
           ?.rich_text?.[0]
-          ?.plain_text,
+          ?.plain_text ?? "",
 
       "Project Id":
         properties["Project Id"]
           ?.rich_text?.[0]
-          ?.plain_text,
+          ?.plain_text ?? "",
+
+      "Contractor Id":
+        properties["Contractor Id"]
+          ?.rich_text?.[0]
+          ?.plain_text ?? "",
 
       "Start Time":
         properties["Start Time"]
