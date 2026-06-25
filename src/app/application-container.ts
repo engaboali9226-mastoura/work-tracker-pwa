@@ -19,6 +19,22 @@ import {
 } from "../domains/work-days/services/work-day-query.service.impl";
 
 import {
+  AreaQueryServiceImpl,
+} from "../domains/areas/services/area-query.service.impl";
+
+import {
+  ProjectQueryServiceImpl,
+} from "../domains/projects/services/project-query.service.impl";
+
+import {
+  SiteQueryServiceImpl,
+} from "../domains/sites/services/site-query.service.impl";
+
+import {
+  ContractorQueryServiceImpl,
+} from "../domains/contractors/services/contractor-query.service.impl";
+
+import {
   createNotionConfiguration,
 } from "../infrastructure/configuration/notion.configuration";
 
@@ -33,6 +49,14 @@ export class ApplicationContainer {
 
   public readonly workDayRepository;
 
+  public readonly areaRepository;
+
+  public readonly projectRepository;
+
+  public readonly siteRepository;
+
+  public readonly contractorRepository;
+
   public readonly taskCreationService;
 
   public readonly taskLifecycleService;
@@ -42,6 +66,14 @@ export class ApplicationContainer {
   public readonly workDayCreationService;
 
   public readonly workDayQueryService;
+
+  public readonly areaQueryService;
+
+  public readonly projectQueryService;
+
+  public readonly siteQueryService;
+
+  public readonly contractorQueryService;
 
   constructor() {
     const configuration =
@@ -60,6 +92,18 @@ export class ApplicationContainer {
 
     this.workDayRepository =
       repositoryFactory.createWorkDayRepository();
+
+    this.areaRepository =
+      repositoryFactory.createAreaRepository();
+
+    this.projectRepository =
+      repositoryFactory.createProjectRepository();
+
+    this.siteRepository =
+      repositoryFactory.createSiteRepository();
+
+    this.contractorRepository =
+      repositoryFactory.createContractorRepository();
 
     this.taskCreationService =
       new TaskCreationServiceImpl({
@@ -101,6 +145,30 @@ export class ApplicationContainer {
 
         workDayRepository:
           this.workDayRepository,
+      });
+
+    this.areaQueryService =
+      new AreaQueryServiceImpl({
+        areaRepository:
+          this.areaRepository,
+      });
+
+    this.projectQueryService =
+      new ProjectQueryServiceImpl({
+        projectRepository:
+          this.projectRepository,
+      });
+
+    this.siteQueryService =
+      new SiteQueryServiceImpl({
+        siteRepository:
+          this.siteRepository,
+      });
+
+    this.contractorQueryService =
+      new ContractorQueryServiceImpl({
+        contractorRepository:
+          this.contractorRepository,
       });
   }
 }
