@@ -51,8 +51,12 @@ import {
 } from "../domains/work-days/services/work-day-query.service.impl";
 
 import {
-  repositoryContainer,
-} from "./repository.container";
+  createNotionConfiguration,
+} from "../infrastructure/configuration/notion.configuration";
+
+import {
+  createRepositoryFactory,
+} from "./repository.factory";
 
 export class ApplicationContainer {
   public readonly taskRepository;
@@ -102,35 +106,46 @@ export class ApplicationContainer {
   public readonly productionRecordQueryService;
 
   constructor() {
+    const configuration =
+      createNotionConfiguration();
+
+    const repositoryFactory =
+      createRepositoryFactory(
+        configuration,
+      );
+
     this.taskRepository =
-      repositoryContainer.taskRepository;
+      repositoryFactory.createTaskRepository();
 
     this.eventRepository =
-      repositoryContainer.eventRepository;
+      repositoryFactory.createEventRepository();
 
     this.workDayRepository =
-      repositoryContainer.workDayRepository;
+      repositoryFactory.createWorkDayRepository();
 
     this.areaRepository =
-      repositoryContainer.areaRepository;
+      repositoryFactory.createAreaRepository();
 
     this.siteRepository =
-      repositoryContainer.siteRepository;
+      repositoryFactory.createSiteRepository();
 
     this.projectRepository =
-      repositoryContainer.projectRepository;
+      repositoryFactory.createProjectRepository();
 
     this.contractorRepository =
-      repositoryContainer.contractorRepository;
+      repositoryFactory.createContractorRepository();
 
     this.taskCategoryRepository =
-      repositoryContainer.taskCategoryRepository;
+      repositoryFactory
+        .createTaskCategoryRepository();
 
     this.subCategoryRepository =
-      repositoryContainer.subCategoryRepository;
+      repositoryFactory
+        .createSubCategoryRepository();
 
     this.productionRecordRepository =
-      repositoryContainer.productionRecordRepository;
+      repositoryFactory
+        .createProductionRecordRepository();
 
     this.taskCreationService =
       new TaskCreationServiceImpl({
