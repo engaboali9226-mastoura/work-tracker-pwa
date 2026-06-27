@@ -1,10 +1,10 @@
 import {
   createNotionConfiguration,
-} from "../infrastructure/configuration/notion.configuration";
+} from "../../infrastructure/configuration/notion.configuration";
 
 import {
   createRepositoryFactory,
-} from "./repository.factory";
+} from "../repository.factory";
 
 export class RepositoryContainer {
 
