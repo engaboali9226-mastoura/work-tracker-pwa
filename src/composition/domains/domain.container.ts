@@ -51,6 +51,10 @@ import {
 } from "../../domains/work-days/services/work-day-creation.service.impl";
 
 import {
+  WorkDayLifecycleServiceImpl,
+} from "../../domains/work-days/services/work-day-lifecycle.service.impl";
+
+import {
   WorkDayQueryServiceImpl,
 } from "../../domains/work-days/services/work-day-query.service.impl";
 
@@ -63,6 +67,8 @@ export class DomainContainer {
   public readonly taskQueryService;
 
   public readonly workDayCreationService;
+
+  public readonly workDayLifecycleService;
 
   public readonly workDayQueryService;
 
@@ -88,12 +94,16 @@ export class DomainContainer {
       new TaskCreationServiceImpl({
         taskRepository:
           repositoryContainer.taskRepository,
+
         workDayRepository:
           repositoryContainer.workDayRepository,
+
         eventRepository:
           repositoryContainer.eventRepository,
+
         taskCategoryRepository:
           repositoryContainer.taskCategoryRepository,
+
         subCategoryRepository:
           repositoryContainer.subCategoryRepository,
       });
@@ -102,6 +112,19 @@ export class DomainContainer {
       new WorkDayCreationServiceImpl({
         workDayRepository:
           repositoryContainer.workDayRepository,
+
+        eventRepository:
+          repositoryContainer.eventRepository,
+      });
+
+    this.workDayLifecycleService =
+      new WorkDayLifecycleServiceImpl({
+        workDayRepository:
+          repositoryContainer.workDayRepository,
+
+        taskRepository:
+          repositoryContainer.taskRepository,
+
         eventRepository:
           repositoryContainer.eventRepository,
       });
@@ -110,6 +133,7 @@ export class DomainContainer {
       new TaskLifecycleServiceImpl({
         taskRepository:
           repositoryContainer.taskRepository,
+
         eventRepository:
           repositoryContainer.eventRepository,
       });
@@ -124,6 +148,7 @@ export class DomainContainer {
       new WorkDayQueryServiceImpl({
         taskRepository:
           repositoryContainer.taskRepository,
+
         workDayRepository:
           repositoryContainer.workDayRepository,
       });
@@ -168,6 +193,7 @@ export class DomainContainer {
       new ProductionRecordCreationServiceImpl({
         taskRepository:
           repositoryContainer.taskRepository,
+
         productionRecordRepository:
           repositoryContainer.productionRecordRepository,
       });
@@ -177,6 +203,7 @@ export class DomainContainer {
         productionRecordRepository:
           repositoryContainer.productionRecordRepository,
       });
+
   }
 
 }
