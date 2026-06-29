@@ -1,4 +1,8 @@
 import {
+  LookupApplicationServiceImpl,
+} from "../../application/lookups";
+
+import {
   TaskApplicationServiceImpl,
 } from "../../application/tasks";
 
@@ -12,11 +16,30 @@ import {
 
 export class ApplicationContainer {
 
+  public readonly lookupApplicationService;
+
   public readonly taskApplicationService;
 
   public readonly workDayApplicationService;
 
   constructor() {
+
+    this.lookupApplicationService =
+      new LookupApplicationServiceImpl({
+
+        areaQueryService:
+          domainContainer.areaQueryService,
+
+        siteQueryService:
+          domainContainer.siteQueryService,
+
+        projectQueryService:
+          domainContainer.projectQueryService,
+
+        contractorQueryService:
+          domainContainer.contractorQueryService,
+
+      });
 
     this.taskApplicationService =
       new TaskApplicationServiceImpl({

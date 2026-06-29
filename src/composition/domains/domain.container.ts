@@ -105,8 +105,7 @@ export class DomainContainer {
           repositoryContainer.taskCategoryRepository,
 
         subCategoryRepository:
-          repositoryContainer.subCategoryRepository,
-      });
+          repositoryContainer.subCategoryRepository,});
 
     this.workDayCreationService =
       new WorkDayCreationServiceImpl({
@@ -153,7 +152,7 @@ export class DomainContainer {
           repositoryContainer.workDayRepository,
       });
 
-    this.areaQueryService =
+        this.areaQueryService =
       new AreaQueryServiceImpl({
         areaRepository:
           repositoryContainer.areaRepository,

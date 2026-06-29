@@ -1,5 +1,5 @@
-function App() {
-  return <h1>Work Tracker PWA</h1>;
-}
+import HomePage from "./pages/home.page";
 
-export default App;
+export default function App() {
+  return <HomePage />;
+}

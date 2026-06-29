@@ -1,10 +1,10 @@
 import type {
   SubCategory,
-} from "../../domains/sub-categories/models/sub-category.model";
+} from "../../../domains/sub-categories/models/sub-category.model";
 
 import type {
   SubCategoryRepository,
-} from "../../domains/sub-categories/repositories/sub-category.repository";
+} from "../../../domains/sub-categories/repositories/sub-category.repository";
 
 export class InMemorySubCategoryRepository
   implements SubCategoryRepository

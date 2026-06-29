@@ -1,6 +1,6 @@
-import type { TaskRepository } from "../../domains/tasks/repositories/task.repository";
-import type { Task } from "../../domains/tasks/models/task.model";
-import type { TaskStatus } from "../../domains/tasks/models/task-status";
+import type { TaskRepository } from "../../../domains/tasks/repositories/task.repository";
+import type { Task } from "../../../domains/tasks/models/task.model";
+import type { TaskStatus } from "../../../domains/tasks/models/task-status";
 
 export class InMemoryTaskRepository
   implements TaskRepository

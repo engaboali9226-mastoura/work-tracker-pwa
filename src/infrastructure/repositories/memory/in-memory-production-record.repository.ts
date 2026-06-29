@@ -1,10 +1,10 @@
 import type {
   ProductionRecord,
-} from "../../domains/production-records/models/production-record.model";
+} from "../../../domains/production-records/models/production-record.model";
 
 import type {
   ProductionRecordRepository,
-} from "../../domains/production-records/repositories/production-record.repository";
+} from "../../../domains/production-records/repositories/production-record.repository";
 
 export class InMemoryProductionRecordRepository
   implements ProductionRecordRepository

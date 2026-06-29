@@ -1,4 +1,4 @@
-export interface NotionApiClient {
+export interface NotionClient {
   queryDatabase(
     databaseId: string,
     filter?: unknown,

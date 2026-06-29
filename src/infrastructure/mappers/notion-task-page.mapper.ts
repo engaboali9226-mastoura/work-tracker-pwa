@@ -3,7 +3,7 @@ import type { Task }
 
 import type {
   NotionTaskPageDto,
-} from "../dto/notion-task-page.dto";
+} from "../notion/dto/notion-task-page.dto";
 
 export class NotionTaskPageMapper {
   public static toPageDto(

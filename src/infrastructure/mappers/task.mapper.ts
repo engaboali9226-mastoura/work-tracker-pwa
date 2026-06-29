@@ -3,7 +3,7 @@ import type { Task }
 
 import type {
   NotionTaskDto,
-} from "../dto/notion-task.dto";
+} from "../notion/dto/notion-task.dto";
 
 export class TaskMapper {
   public static toDomain(

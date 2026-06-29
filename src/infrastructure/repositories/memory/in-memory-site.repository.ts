@@ -1,8 +1,8 @@
 import type { Site }
-  from "../../domains/sites/models/site.model";
+  from "../../../domains/sites/models/site.model";
 
 import type { SiteRepository }
-  from "../../domains/sites/repositories/site.repository";
+  from "../../../domains/sites/repositories/site.repository";
 
 export class InMemorySiteRepository
   implements SiteRepository

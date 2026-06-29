@@ -1,8 +1,8 @@
 import type { Area }
-  from "../../domains/areas/models/area.model";
+  from "../../../domains/areas/models/area.model";
 
 import type { AreaRepository }
-  from "../../domains/areas/repositories/area.repository";
+  from "../../../domains/areas/repositories/area.repository";
 
 export class InMemoryAreaRepository
   implements AreaRepository

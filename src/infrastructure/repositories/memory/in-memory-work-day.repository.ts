@@ -1,5 +1,5 @@
-import type { WorkDay } from "../../domains/work-days/models/work-day.model";
-import type { WorkDayRepository } from "../../domains/work-days/repositories/work-day.repository";
+import type { WorkDay } from "../../../domains/work-days/models/work-day.model";
+import type { WorkDayRepository } from "../../../domains/work-days/repositories/work-day.repository";
 
 export class InMemoryWorkDayRepository
   implements WorkDayRepository

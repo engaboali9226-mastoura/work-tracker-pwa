@@ -1,10 +1,10 @@
 import type {
   TaskCategory,
-} from "../../domains/task-categories/models/task-category.model";
+} from "../../../domains/task-categories/models/task-category.model";
 
 import type {
   TaskCategoryRepository,
-} from "../../domains/task-categories/repositories/task-category.repository";
+} from "../../../domains/task-categories/repositories/task-category.repository";
 
 export class InMemoryTaskCategoryRepository
   implements TaskCategoryRepository

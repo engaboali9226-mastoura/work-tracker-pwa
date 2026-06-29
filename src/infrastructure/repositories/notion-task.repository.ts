@@ -2,7 +2,7 @@ import type { Task } from "../../domains/tasks/models/task.model";
 import type { TaskStatus } from "../../domains/tasks/models/task-status";
 import type { TaskRepository } from "../../domains/tasks/repositories/task.repository";
 
-import type { NotionApiClient } from "../api/clients/notion-api-client";
+import type { NotionClient } from "../notion/client/notion.client";
 import type { EnvironmentConfiguration } from "../configuration/environment.configuration";
 
 import { NotionTaskPageExtractor } from "../mappers/notion-task-page.extractor";
@@ -13,12 +13,12 @@ import { NotionPageIdExtractor } from "../mappers/notion-page-id.extractor";
 export class NotionTaskRepository
   implements TaskRepository
 {
-  private readonly notionClient: NotionApiClient;
+  private readonly notionClient: NotionClient;
 
   private readonly configuration: EnvironmentConfiguration;
 
   constructor(
-    notionClient: NotionApiClient,
+    notionClient: NotionClient,
     configuration: EnvironmentConfiguration,
   ) {
     this.notionClient = notionClient;

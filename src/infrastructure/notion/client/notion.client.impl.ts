@@ -1,9 +1,9 @@
 import { Client } from "@notionhq/client";
 
-import type { NotionApiClient } from "./notion-api-client";
+import type { NotionClient } from "./notion.client";
 
-export class NotionApiClientImpl
-  implements NotionApiClient
+export class NotionClientImpl
+  implements NotionClient
 {
   private readonly client: Client;
 

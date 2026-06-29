@@ -1,8 +1,8 @@
 import type { Project }
-  from "../../domains/projects/models/project.model";
+  from "../../../domains/projects/models/project.model";
 
 import type { ProjectRepository }
-  from "../../domains/projects/repositories/project.repository";
+  from "../../../domains/projects/repositories/project.repository";
 
 export class InMemoryProjectRepository
   implements ProjectRepository

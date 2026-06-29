@@ -2,7 +2,7 @@ import type { EventLog } from "../../domains/event-log/models/event.model";
 
 import type { EventRepository } from "../../domains/event-log/repositories/event.repository";
 
-import type { NotionApiClient } from "../api/clients/notion-api-client";
+import type { NotionClient } from "../notion/client/notion.client";
 
 import type { EnvironmentConfiguration } from "../configuration/environment.configuration";
 
@@ -13,12 +13,12 @@ import { NotionEventPropertiesMapper } from "../mappers/notion-event-properties.
 export class NotionEventRepository
   implements EventRepository
 {
-  private readonly notionClient: NotionApiClient;
+  private readonly notionClient: NotionClient;
 
   private readonly configuration: EnvironmentConfiguration;
 
   constructor(
-    notionClient: NotionApiClient,
+    notionClient: NotionClient,
     configuration: EnvironmentConfiguration,
   ) {
     this.notionClient = notionClient;

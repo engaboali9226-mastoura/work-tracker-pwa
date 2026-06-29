@@ -1,4 +1,4 @@
-import type { NotionEventPageDto } from "../dto/notion-event-page.dto";
+import type { NotionEventPageDto } from "../notion/dto/notion-event-page.dto";
 
 export class NotionEventPropertiesMapper {
   public static toProperties(

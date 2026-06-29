@@ -1,8 +1,8 @@
 import type { Contractor }
-  from "../../domains/contractors/models/contractor.model";
+  from "../../../domains/contractors/models/contractor.model";
 
 import type { ContractorRepository }
-  from "../../domains/contractors/repositories/contractor.repository";
+  from "../../../domains/contractors/repositories/contractor.repository";
 
 export class InMemoryContractorRepository
   implements ContractorRepository

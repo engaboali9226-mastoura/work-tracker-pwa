@@ -1,5 +1,5 @@
 import type { EventLog } from "../../domains/event-log/models/event.model";
-import type { NotionEventDto } from "../dto/notion-event.dto";
+import type { NotionEventDto } from "../notion/dto/notion-event.dto";
 
 export class EventMapper {
   public static toDomain(

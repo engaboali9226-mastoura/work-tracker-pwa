@@ -1,6 +1,6 @@
 import type {
   NotionTaskPageDto,
-} from "../dto/notion-task-page.dto";
+} from "../notion/dto/notion-task-page.dto";
 
 export class NotionTaskPageExtractor {
   public static extract(

@@ -1,5 +1,5 @@
 import type { TaskStatus }
-  from "../../domains/tasks/models/task-status";
+  from "../../../domains/tasks/models/task-status";
 
 export interface NotionTaskPageDto {
   "Task Key": string;

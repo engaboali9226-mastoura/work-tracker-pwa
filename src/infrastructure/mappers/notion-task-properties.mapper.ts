@@ -1,4 +1,4 @@
-import type { NotionTaskPageDto } from "../dto/notion-task-page.dto";
+import type { NotionTaskPageDto } from "../notion/dto/notion-task-page.dto";
 
 export class NotionTaskPropertiesMapper {
   public static toProperties(
